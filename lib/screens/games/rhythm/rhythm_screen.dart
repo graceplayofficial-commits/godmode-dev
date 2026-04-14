@@ -25,7 +25,7 @@ const _verses = [
       ['너는', '마음을', '다하여', '여호와를', '신뢰하고', '네', '명철을', '의지하지', '말라']),
 ];
 
-const _laneColors = [AppColors.lane1, AppColors.lane2, AppColors.lane3, AppColors.lane4];
+const _laneColors = [C.lane1, C.lane2, C.lane3, C.lane4];
 const _hitZoneY = 0.80; // 80% down the lane area
 const _hitWindow = 0.12;
 
@@ -203,10 +203,10 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
     showDialog(
       context: context, barrierDismissible: false,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: C.surface,
         title: Text('랭크 $rank  ${accuracy >= 80 ? "✅ 암송 완료!" : "다시 도전!"}'),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(_verse.reference, style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700)),
+          Text(_verse.reference, style: const TextStyle(color: C.lime, fontWeight: FontWeight.w700)),
           const SizedBox(height: 12),
           _resultRow('🎯 점수', '$_score pt'),
           _resultRow('💯 정확도', '$accuracy%'),
@@ -218,7 +218,7 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: AppColors.gold.withAlpha(30), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.gold.withAlpha(80))),
+              decoration: BoxDecoration(color: C.lime.withAlpha(30), borderRadius: BorderRadius.circular(8), border: Border.all(color: C.lime.withAlpha(80))),
               child: Text('"${_verse.text}"\n- ${_verse.reference}', style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic, height: 1.5)),
             ),
           ],
@@ -237,7 +237,7 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
             _ticker?.dispose();
             _ticker = null;
           },
-          child: const Text('다시하기', style: TextStyle(color: AppColors.gold)),
+          child: const Text('다시하기', style: TextStyle(color: C.lime)),
         )],
       ),
     );
@@ -257,7 +257,7 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: C.bg,
       body: SafeArea(child: Column(children: [
         _buildHeader(),
         _buildVerseBar(),
@@ -275,32 +275,32 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
           onTap: () { _ticker?.stop(); Navigator.pop(context); },
           child: Container(
             width: 36, height: 36,
-            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.border)),
-            child: const Icon(Icons.close_rounded, size: 18, color: AppColors.secondary),
+            decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: C.border)),
+            child: const Icon(Icons.close_rounded, size: 18, color: C.grey),
           ),
         ),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('말씀 암송 리듬게임', style: AppTextStyles.cardTitle),
-          Text(_verse.reference, style: AppTextStyles.caption.copyWith(color: AppColors.secondary)),
+          Text('말씀 암송 리듬게임', style: S.cardTitle),
+          Text(_verse.reference, style: S.caption.copyWith(color: C.grey)),
         ])),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: AppColors.rhythmViolet,
+            color: C.rhythmViolet,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.rhythmVioletAccent.withAlpha(30)),
+            border: Border.all(color: C.rhythmViolet.withAlpha(30)),
           ),
-          child: Text('🔥 x$_combo', style: AppTextStyles.body.copyWith(color: AppColors.rhythmVioletAccent, fontWeight: FontWeight.w700)),
+          child: Text('🔥 x$_combo', style: S.body.copyWith(color: C.rhythmViolet, fontWeight: FontWeight.w700)),
         ),
         const SizedBox(width: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [AppColors.gold.withAlpha(20), AppColors.gold.withAlpha(8)]),
+            gradient: LinearGradient(colors: [C.lime.withAlpha(20), C.lime.withAlpha(8)]),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Text('$_score', style: AppTextStyles.title.copyWith(color: AppColors.gold)),
+          child: Text('$_score', style: S.title.copyWith(color: C.lime)),
         ),
       ]),
     );
@@ -312,10 +312,10 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(12)),
       child: Column(children: [
         Text('"${_verse.text}"',
-            style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic, color: AppColors.white, height: 1.5),
+            style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic, color: C.white, height: 1.5),
             textAlign: TextAlign.center),
         const SizedBox(height: 8),
         Row(children: [
@@ -323,13 +323,13 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: total == 0 ? 0 : done / total,
-              backgroundColor: AppColors.border,
-              valueColor: const AlwaysStoppedAnimation(AppColors.gold),
+              backgroundColor: C.border,
+              valueColor: const AlwaysStoppedAnimation(C.lime),
               minHeight: 5,
             ),
           )),
           const SizedBox(width: 8),
-          Text('$done/$total', style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+          Text('$done/$total', style: const TextStyle(fontSize: 11, color: C.grey)),
         ]),
       ]),
     );
@@ -342,7 +342,7 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
         Row(children: List.generate(4, (i) => Expanded(child: Container(
           decoration: BoxDecoration(
             border: Border(
-              left: i > 0 ? const BorderSide(color: AppColors.border, width: 0.5) : BorderSide.none,
+              left: i > 0 ? const BorderSide(color: C.border, width: 0.5) : BorderSide.none,
             ),
           ),
         )))),
@@ -351,7 +351,7 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
         Positioned(
           left: 0, right: 0,
           top: constraints.maxHeight * _hitZoneY,
-          child: Container(height: 2, color: AppColors.gold.withAlpha(120)),
+          child: Container(height: 2, color: C.lime.withAlpha(120)),
         ),
 
         // Falling tiles
@@ -387,7 +387,7 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
                 j.result == _JudgeResult.perfect ? 'PERFECT' : j.result == _JudgeResult.good ? 'GOOD' : 'MISS',
                 style: TextStyle(
                   fontSize: 12, fontWeight: FontWeight.w900,
-                  color: j.result == _JudgeResult.perfect ? AppColors.gold
+                  color: j.result == _JudgeResult.perfect ? C.lime
                       : j.result == _JudgeResult.good ? Colors.lightGreen
                       : Colors.redAccent,
                 ),
@@ -399,16 +399,16 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
         // Start overlay
         if (!_started)
           Container(
-            color: AppColors.bg.withAlpha(220),
+            color: C.bg.withAlpha(220),
             child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               const Text('🎵', style: TextStyle(fontSize: 48)),
               const SizedBox(height: 8),
               const Text('4개의 라인에서 단어가 내려옵니다\n박자에 맞춰 해당 버튼을 누르세요!',
-                  style: TextStyle(fontSize: 13, color: AppColors.secondary, height: 1.6), textAlign: TextAlign.center),
+                  style: TextStyle(fontSize: 13, color: C.grey, height: 1.6), textAlign: TextAlign.center),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _startGame,
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.gold, foregroundColor: AppColors.bg, padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12)),
+                style: ElevatedButton.styleFrom(backgroundColor: C.lime, foregroundColor: C.bg, padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12)),
                 child: const Text('시작', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
               ),
             ])),
@@ -421,7 +421,7 @@ class _RhythmScreenState extends State<RhythmScreen> with TickerProviderStateMix
     return Container(
       height: 76,
       padding: const EdgeInsets.fromLTRB(8, 6, 8, 12),
-      decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.border))),
+      decoration: const BoxDecoration(border: Border(top: BorderSide(color: C.border))),
       child: Row(children: List.generate(4, (i) => Expanded(
         child: GestureDetector(
           onTapDown: (_) => _tapLane(i),

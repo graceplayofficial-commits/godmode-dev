@@ -21,7 +21,7 @@ class _Card {
     _Rarity.common => const Color(0xFF888888),
     _Rarity.rare => const Color(0xFF4A8FE4),
     _Rarity.hero => const Color(0xFF9B4AE4),
-    _Rarity.legend => AppColors.gold,
+    _Rarity.legend => C.lime,
   };
   String get rarityKo => switch (rarity) { _Rarity.common => '일반', _Rarity.rare => '희귀', _Rarity.hero => '영웅', _Rarity.legend => '전설' };
   String get rarityStars => switch (rarity) { _Rarity.common => '★☆☆☆', _Rarity.rare => '★★☆☆', _Rarity.hero => '★★★☆', _Rarity.legend => '★★★★' };
@@ -197,7 +197,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('업적 달성!\n$msg'),
-          backgroundColor: AppColors.gold,
+          backgroundColor: C.lime,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
         ));
@@ -209,7 +209,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
     if (_isDrawing) return;
     if (!free && _gems < count * 10) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('보석이 부족합니다! 보석 획득 탭을 확인하세요.'), backgroundColor: AppColors.surface),
+        const SnackBar(content: Text('보석이 부족합니다! 보석 획득 탭을 확인하세요.'), backgroundColor: C.surface),
       );
       return;
     }
@@ -259,7 +259,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
     _saveData();
     HapticFeedback.mediumImpact();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('오늘의 보석 30💎 획득!'), backgroundColor: AppColors.surface, behavior: SnackBarBehavior.floating),
+      const SnackBar(content: Text('오늘의 보석 30💎 획득!'), backgroundColor: C.surface, behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -294,14 +294,14 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
     _saveData();
     HapticFeedback.selectionClick();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${ach.title} 달성! +${ach.gems}💎'), backgroundColor: AppColors.surface, behavior: SnackBarBehavior.floating),
+      SnackBar(content: Text('${ach.title} 달성! +${ach.gems}💎'), backgroundColor: C.surface, behavior: SnackBarBehavior.floating),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: C.bg,
       body: SafeArea(child: Column(children: [
         _buildHeader(),
         _buildPityBar(),
@@ -322,7 +322,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
         const SizedBox(width: 10),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('성경 인물 카드', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-          Text('${_collection.length}/${_allCards.length} 수집', style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+          Text('${_collection.length}/${_allCards.length} 수집', style: const TextStyle(fontSize: 11, color: C.grey)),
         ]),
         const Spacer(),
         // Earn gems toggle
@@ -332,20 +332,20 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: _showEarn ? const Color(0xFF2D5A27) : AppColors.elevated,
+              color: _showEarn ? const Color(0xFF2D5A27) : C.elevated,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: _showEarn ? Colors.green : AppColors.border),
+              border: Border.all(color: _showEarn ? Colors.green : C.border),
             ),
             child: Text(_showEarn ? '돌아가기' : '💎 획득', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(color: AppColors.elevated, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
+          decoration: BoxDecoration(color: C.elevated, borderRadius: BorderRadius.circular(14), border: Border.all(color: C.border)),
           child: Row(children: [
             const Text('💎', style: TextStyle(fontSize: 16)),
             const SizedBox(width: 4),
-            Text('$_gems', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.gold, fontSize: 16)),
+            Text('$_gems', style: const TextStyle(fontWeight: FontWeight.w800, color: C.lime, fontSize: 16)),
           ]),
         ),
       ]),
@@ -357,7 +357,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(10)),
       child: Row(children: [
         const Text('⭐ 천장', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
         const SizedBox(width: 8),
@@ -365,15 +365,15 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
             value: pityPct,
-            backgroundColor: AppColors.border,
-            valueColor: AlwaysStoppedAnimation(pityPct > 0.7 ? Colors.red : AppColors.gold),
+            backgroundColor: C.border,
+            valueColor: AlwaysStoppedAnimation(pityPct > 0.7 ? Colors.red : C.lime),
             minHeight: 6,
           ),
         )),
         const SizedBox(width: 8),
-        Text('$_pityCount/90', style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+        Text('$_pityCount/90', style: const TextStyle(fontSize: 11, color: C.grey)),
         const SizedBox(width: 10),
-        Text('총 ${_totalPulls}회', style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+        Text('총 ${_totalPulls}회', style: const TextStyle(fontSize: 11, color: C.grey)),
       ]),
     );
   }
@@ -403,7 +403,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
   Widget _sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.gold)),
+      child: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: C.lime)),
     );
   }
 
@@ -411,28 +411,28 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: C.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _canDailyGem ? Colors.green : AppColors.border),
+        border: Border.all(color: _canDailyGem ? Colors.green : C.border),
       ),
       child: Row(children: [
         const Text('💎', style: TextStyle(fontSize: 36)),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('오늘의 보석', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-          const Text('매일 30💎 무료 지급', style: TextStyle(fontSize: 11, color: AppColors.secondary)),
+          const Text('매일 30💎 무료 지급', style: TextStyle(fontSize: 11, color: C.grey)),
         ])),
         GestureDetector(
           onTap: _canDailyGem ? _claimDailyGem : null,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: _canDailyGem ? Colors.green : AppColors.elevated,
+              color: _canDailyGem ? Colors.green : C.elevated,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               _canDailyGem ? '+30💎' : '완료',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: _canDailyGem ? Colors.white : AppColors.secondary),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: _canDailyGem ? Colors.white : C.grey),
             ),
           ),
         ),
@@ -443,18 +443,18 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
   Widget _dupeConversionInfo() {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
+      decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: C.border)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('중복 카드를 보석으로 교환하세요', style: TextStyle(fontSize: 12, color: AppColors.secondary)),
+        const Text('중복 카드를 보석으로 교환하세요', style: TextStyle(fontSize: 12, color: C.grey)),
         const SizedBox(height: 8),
         Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           _dupeRate('일반', const Color(0xFF888888), '1💎'),
           _dupeRate('희귀', const Color(0xFF4A8FE4), '3💎'),
           _dupeRate('영웅', const Color(0xFF9B4AE4), '10💎'),
-          _dupeRate('전설', AppColors.gold, '50💎'),
+          _dupeRate('전설', C.lime, '50💎'),
         ]),
         const SizedBox(height: 10),
-        const Text('보유 카드를 탭하면 중복 변환 버튼이 나타납니다', style: TextStyle(fontSize: 11, color: AppColors.secondary)),
+        const Text('보유 카드를 탭하면 중복 변환 버튼이 나타납니다', style: TextStyle(fontSize: 11, color: C.grey)),
       ]),
     );
   }
@@ -468,7 +468,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
         child: Text(rarity, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: color)),
       ),
       const SizedBox(height: 3),
-      Text(rate, style: const TextStyle(fontSize: 11, color: AppColors.gold, fontWeight: FontWeight.w700)),
+      Text(rate, style: const TextStyle(fontSize: 11, color: C.lime, fontWeight: FontWeight.w700)),
     ]);
   }
 
@@ -478,28 +478,28 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: C.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: claimable ? AppColors.gold : ach.claimed ? AppColors.border.withAlpha(80) : AppColors.border),
+        border: Border.all(color: claimable ? C.lime : ach.claimed ? C.border.withAlpha(80) : C.border),
       ),
       child: Row(children: [
         Text(ach.claimed ? '✅' : claimable ? '🎁' : '🔒', style: const TextStyle(fontSize: 20)),
         const SizedBox(width: 10),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(ach.title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: ach.claimed ? AppColors.secondary : null)),
-          Text(ach.desc, style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+          Text(ach.title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: ach.claimed ? C.grey : null)),
+          Text(ach.desc, style: const TextStyle(fontSize: 11, color: C.grey)),
         ])),
         if (claimable)
           GestureDetector(
             onTap: () => _claimAchievement(ach),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(6)),
-              child: Text('+${ach.gems}💎', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.bg)),
+              decoration: BoxDecoration(color: C.lime, borderRadius: BorderRadius.circular(6)),
+              child: Text('+${ach.gems}💎', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: C.bg)),
             ),
           )
         else
-          Text('+${ach.gems}💎', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: ach.claimed ? AppColors.secondary : AppColors.gold.withAlpha(140))),
+          Text('+${ach.gems}💎', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: ach.claimed ? C.grey : C.lime.withAlpha(140))),
       ]),
     );
   }
@@ -562,9 +562,9 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
               ]),
               const SizedBox(height: 2),
               Text(card.rarityStars, style: TextStyle(color: card.color, fontSize: 13)),
-              Text(card.verse, style: const TextStyle(color: AppColors.secondary, fontSize: 11)),
+              Text(card.verse, style: const TextStyle(color: C.grey, fontSize: 11)),
               const SizedBox(height: 6),
-              Text(card.desc, style: const TextStyle(fontSize: 11, color: AppColors.secondary, height: 1.4)),
+              Text(card.desc, style: const TextStyle(fontSize: 11, color: C.grey, height: 1.4)),
             ])),
           ]),
         );
@@ -606,7 +606,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(color: card.color, borderRadius: BorderRadius.circular(4)),
-      child: Text(card.rarityKo, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: card.rarity == _Rarity.legend ? AppColors.bg : Colors.white)),
+      child: Text(card.rarityKo, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: card.rarity == _Rarity.legend ? C.bg : Colors.white)),
     );
   }
 
@@ -618,9 +618,9 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
           Expanded(child: _drawBtn('무료 뽑기', '1일 1회', const Color(0xFF2D5A27), () => _draw(free: true))),
           const SizedBox(width: 8),
         ],
-        Expanded(child: _drawBtn('💎10 · 1뽑기', '1회 소환', AppColors.gold.withAlpha(200), () => _draw(count: 1), textColor: AppColors.bg)),
+        Expanded(child: _drawBtn('💎10 · 1뽑기', '1회 소환', C.lime.withAlpha(200), () => _draw(count: 1), textColor: C.bg)),
         const SizedBox(width: 8),
-        Expanded(child: _drawBtn('💎100 · 10뽑기', '10회 소환', AppColors.gold, () => _draw(count: 10), textColor: AppColors.bg)),
+        Expanded(child: _drawBtn('💎100 · 10뽑기', '10회 소환', C.lime, () => _draw(count: 10), textColor: C.bg)),
       ]),
     );
   }
@@ -648,15 +648,15 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
 
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.surface,
+        color: C.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        border: Border(top: BorderSide(color: AppColors.border)),
+        border: Border(top: BorderSide(color: C.border)),
       ),
       child: Column(children: [
         Padding(padding: const EdgeInsets.all(10), child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Text('보유 카드', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
           const SizedBox(width: 8),
-          Text('${cards.length}/${_allCards.length}', style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+          Text('${cards.length}/${_allCards.length}', style: const TextStyle(fontSize: 11, color: C.grey)),
         ])),
         Expanded(child: GridView.builder(
           padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
@@ -678,17 +678,17 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: owned ? card.color.withAlpha(20) : AppColors.elevated,
+          color: owned ? card.color.withAlpha(20) : C.elevated,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: owned ? card.color.withAlpha(120) : AppColors.border, width: owned ? 1.5 : 1),
+          border: Border.all(color: owned ? card.color.withAlpha(120) : C.border, width: owned ? 1.5 : 1),
         ),
         child: Stack(children: [
           Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             const Spacer(),
-            Text(owned ? card.emoji : '❓', style: TextStyle(fontSize: 28, color: owned ? null : AppColors.border.withAlpha(128))),
+            Text(owned ? card.emoji : '❓', style: TextStyle(fontSize: 28, color: owned ? null : C.border.withAlpha(128))),
             const SizedBox(height: 3),
             Text(owned ? card.name : '???',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: owned ? null : AppColors.secondary),
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: owned ? null : C.grey),
                 textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
             if (owned) Text(card.rarityKo, style: TextStyle(fontSize: 9, color: card.color)),
             const Spacer(),
@@ -699,8 +699,8 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
               top: 3, right: 3,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(4)),
-                child: Text('x$count', style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: AppColors.bg)),
+                decoration: BoxDecoration(color: C.lime, borderRadius: BorderRadius.circular(4)),
+                child: Text('x$count', style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: C.bg)),
               ),
             ),
         ]),
@@ -711,7 +711,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
   void _showDetail(_Card card) {
     final count = _collection[card.name] ?? 0;
     showModalBottomSheet(
-      context: context, backgroundColor: AppColors.surface,
+      context: context, backgroundColor: C.surface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => Padding(
@@ -728,21 +728,21 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
             ])),
           ]),
           const SizedBox(height: 12),
-          Text(card.desc, style: const TextStyle(fontSize: 13, color: AppColors.secondary, height: 1.6)),
+          Text(card.desc, style: const TextStyle(fontSize: 13, color: C.grey, height: 1.6)),
           const SizedBox(height: 16),
           ...card.stats.entries.map((e) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(children: [
-              SizedBox(width: 56, child: Text(e.key, style: const TextStyle(color: AppColors.secondary, fontSize: 13))),
+              SizedBox(width: 56, child: Text(e.key, style: const TextStyle(color: C.grey, fontSize: 13))),
               Expanded(child: ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(value: e.value / 100, backgroundColor: AppColors.border, valueColor: AlwaysStoppedAnimation(card.color), minHeight: 8),
+                child: LinearProgressIndicator(value: e.value / 100, backgroundColor: C.border, valueColor: AlwaysStoppedAnimation(card.color), minHeight: 8),
               )),
               SizedBox(width: 32, child: Text('${e.value}', style: const TextStyle(fontSize: 12), textAlign: TextAlign.right)),
             ]),
           )),
           const SizedBox(height: 12),
-          Text('보유 수량: $count장', style: const TextStyle(color: AppColors.secondary, fontSize: 12)),
+          Text('보유 수량: $count장', style: const TextStyle(color: C.grey, fontSize: 12)),
           // Dupe conversion button
           if (count > 1) ...[
             const SizedBox(height: 12),
@@ -758,7 +758,7 @@ class _GachaScreenState extends State<GachaScreen> with TickerProviderStateMixin
                 ),
                 child: Column(children: [
                   Text('중복 ${count - 1}장 → 💎${(count - 1) * card.dupeGems} 변환', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: card.color)),
-                  Text('1장 보존 · 나머지 ${card.dupeGems}💎/장', style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+                  Text('1장 보존 · 나머지 ${card.dupeGems}💎/장', style: const TextStyle(fontSize: 11, color: C.grey)),
                 ]),
               ),
             ),

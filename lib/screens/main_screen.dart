@@ -21,40 +21,38 @@ class _MainScreenState extends State<MainScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        body: Stack(
-          children: [
-            _screens[_idx],
-            Positioned(left: 0, right: 0, bottom: 0, child: _tabBar()),
-          ],
-        ),
+        body: Stack(children: [
+          _screens[_idx],
+          Positioned(left: 0, right: 0, bottom: 0, child: _tabBar()),
+        ]),
       ),
     );
   }
 
   Widget _tabBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.of(context).padding.bottom + 12),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.of(context).padding.bottom + 10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter, end: Alignment.bottomCenter,
-          colors: [AppColors.bg.withAlpha(0), AppColors.bg.withAlpha(200), AppColors.bg],
-          stops: const [0.0, 0.3, 1.0],
+          colors: [C.bg.withAlpha(0), C.bg.withAlpha(230), C.bg],
+          stops: const [0.0, 0.35, 1.0],
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
           child: Container(
-            height: 64,
+            height: 60,
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: AppColors.surface.withAlpha(220),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: AppColors.white.withAlpha(8)),
+              color: C.surface.withAlpha(200),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: C.border),
             ),
             child: Row(children: [
-              _tab(Icons.play_circle_filled_rounded, 'REELS', 0),
+              _tab(Icons.play_circle_rounded, 'REELS', 0),
               _tab(Icons.psychology_rounded, 'TEST', 1),
               _tab(Icons.sports_esports_rounded, 'GAMES', 2),
             ]),
@@ -65,32 +63,23 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _tab(IconData icon, String label, int i) {
-    final active = _idx == i;
+    final on = _idx == i;
     return Expanded(
       child: GestureDetector(
         onTap: () { HapticFeedback.selectionClick(); setState(() => _idx = i); },
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
           height: double.infinity,
           decoration: BoxDecoration(
-            gradient: active ? const LinearGradient(
-              colors: [Color(0xFFE8D48B), AppColors.gold],
-              begin: Alignment.topLeft, end: Alignment.bottomRight,
-            ) : null,
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: active ? [
-              BoxShadow(color: AppColors.gold.withAlpha(50), blurRadius: 16, spreadRadius: -2),
-            ] : null,
+            color: on ? C.lime : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: on ? [BoxShadow(color: C.lime.withAlpha(40), blurRadius: 16)] : null,
           ),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(icon, color: active ? const Color(0xFF1A1400) : AppColors.muted, size: 20),
+            Icon(icon, color: on ? C.bg : C.greyDark, size: 20),
             const SizedBox(height: 2),
-            Text(label, style: AppTextStyles.tabLabel.copyWith(
-              color: active ? const Color(0xFF1A1400) : AppColors.muted,
-              fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-            )),
+            Text(label, style: S.tabLabel.copyWith(color: on ? C.bg : C.greyDark)),
           ]),
         ),
       ),

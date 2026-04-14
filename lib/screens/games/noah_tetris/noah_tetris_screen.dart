@@ -284,18 +284,18 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
     showDialog(
       context: context, barrierDismissible: false,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: C.surface,
         title: const Text('⛺ 홍수가 왔습니다!'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           Text('점수: $_score', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-          Text('레벨: $_level  |  줄: $_lines', style: const TextStyle(color: AppColors.secondary)),
+          Text('레벨: $_level  |  줄: $_lines', style: const TextStyle(color: C.grey)),
           const SizedBox(height: 12),
           const Text('"노아가 여호와께서 자기에게 명하신 대로 다 준행하였더라" (창 7:5)',
-              style: TextStyle(color: AppColors.secondary, fontSize: 12, fontStyle: FontStyle.italic), textAlign: TextAlign.center),
+              style: TextStyle(color: C.grey, fontSize: 12, fontStyle: FontStyle.italic), textAlign: TextAlign.center),
         ]),
         actions: [TextButton(
           onPressed: () { Navigator.pop(context); setState(() => _reset()); },
-          child: const Text('다시 방주 짓기', style: TextStyle(color: AppColors.gold)),
+          child: const Text('다시 방주 짓기', style: TextStyle(color: C.lime)),
         )],
       ),
     );
@@ -304,7 +304,7 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: C.bg,
       body: SafeArea(child: Column(children: [
         _buildHeader(),
         Expanded(child: Row(children: [
@@ -325,27 +325,27 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
           onTap: () => Navigator.pop(context),
           child: Container(
             width: 36, height: 36,
-            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.border)),
-            child: const Icon(Icons.close_rounded, size: 18, color: AppColors.secondary),
+            decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: C.border)),
+            child: const Icon(Icons.close_rounded, size: 18, color: C.grey),
           ),
         ),
         const SizedBox(width: 12),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('노아의 방주 테트리스', style: AppTextStyles.cardTitle),
-          Text('Lv.$_level', style: AppTextStyles.caption.copyWith(color: AppColors.secondary)),
+          Text('노아의 방주 테트리스', style: S.cardTitle),
+          Text('Lv.$_level', style: S.caption.copyWith(color: C.grey)),
         ]),
         const Spacer(),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [AppColors.gold.withAlpha(20), AppColors.gold.withAlpha(8)]),
+            gradient: LinearGradient(colors: [C.lime.withAlpha(20), C.lime.withAlpha(8)]),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.gold.withAlpha(30)),
+            border: Border.all(color: C.lime.withAlpha(30)),
           ),
           child: Row(children: [
-            Text('$_score', style: AppTextStyles.title.copyWith(color: AppColors.gold)),
+            Text('$_score', style: S.title.copyWith(color: C.lime)),
             const SizedBox(width: 3),
-            Text('PT', style: AppTextStyles.caption.copyWith(color: AppColors.gold.withAlpha(150))),
+            Text('PT', style: S.caption.copyWith(color: C.lime.withAlpha(150))),
           ]),
         ),
       ]),
@@ -361,7 +361,7 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF0A0A1A),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border, width: 1),
+          border: Border.all(color: C.border, width: 1),
         ),
         child: _started
             ? CustomPaint(painter: _BoardPainter(_board, _boardEmoji, _current, ghost))
@@ -376,11 +376,11 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
       const SizedBox(height: 8),
       const Text('노아의 방주\n테트리스', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15), textAlign: TextAlign.center),
       const SizedBox(height: 4),
-      const Text('동물 2마리씩 방주에\n효율적으로 채워라!', style: TextStyle(fontSize: 11, color: AppColors.secondary), textAlign: TextAlign.center),
+      const Text('동물 2마리씩 방주에\n효율적으로 채워라!', style: TextStyle(fontSize: 11, color: C.grey), textAlign: TextAlign.center),
       const SizedBox(height: 16),
       ElevatedButton(
         onPressed: _startGame,
-        style: ElevatedButton.styleFrom(backgroundColor: AppColors.gold, foregroundColor: AppColors.bg),
+        style: ElevatedButton.styleFrom(backgroundColor: C.lime, foregroundColor: C.bg),
         child: const Text('방주 짓기 시작', style: TextStyle(fontWeight: FontWeight.w800)),
       ),
     ]));
@@ -407,18 +407,18 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
       margin: const EdgeInsets.all(4),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: C.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: C.border),
       ),
       child: Column(children: [
-        Text(label, style: const TextStyle(fontSize: 9, color: AppColors.secondary, letterSpacing: 1)),
+        Text(label, style: const TextStyle(fontSize: 9, color: C.grey, letterSpacing: 1)),
         const SizedBox(height: 4),
         SizedBox(
           height: 44,
           child: piece != null
               ? Center(child: Text(_pieceEmojis[piece.type], style: const TextStyle(fontSize: 28)))
-              : const Center(child: Text('—', style: TextStyle(color: AppColors.border))),
+              : const Center(child: Text('—', style: TextStyle(color: C.border))),
         ),
       ]),
     );
@@ -429,14 +429,14 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
       margin: const EdgeInsets.all(4),
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: C.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: C.border),
       ),
       child: Column(children: [
-        Text(label, style: AppTextStyles.caption),
+        Text(label, style: S.caption),
         const SizedBox(height: 2),
-        Text(value, style: AppTextStyles.title),
+        Text(value, style: S.title),
       ]),
     );
   }
@@ -445,14 +445,14 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(8, 6, 8, 10),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-        _ctrlBtn(Icons.swap_horiz, _holdPiece, color: AppColors.secondary, size: 20, label: 'HOLD'),
+        _ctrlBtn(Icons.swap_horiz, _holdPiece, color: C.grey, size: 20, label: 'HOLD'),
         GestureDetector(
           onTapDown: (_) => _startRepeat(_moveLeft),
           onTapUp: (_) => _stopRepeat(),
           onTapCancel: _stopRepeat,
           child: _ctrlBox(Icons.arrow_back_ios_new, size: 28),
         ),
-        _ctrlBtn(Icons.rotate_right, _rotate, color: AppColors.gold, size: 26, label: 'ROT'),
+        _ctrlBtn(Icons.rotate_right, _rotate, color: C.lime, size: 26, label: 'ROT'),
         GestureDetector(
           onTapDown: (_) => _startRepeat(_moveRight),
           onTapUp: (_) => _stopRepeat(),
@@ -466,21 +466,21 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
           onDoubleTap: _hardDrop,
           child: _ctrlBox(Icons.keyboard_arrow_down, size: 28),
         ),
-        _ctrlBtn(Icons.vertical_align_bottom, _hardDrop, color: AppColors.secondary, size: 20, label: 'DROP'),
+        _ctrlBtn(Icons.vertical_align_bottom, _hardDrop, color: C.grey, size: 20, label: 'DROP'),
       ]),
     );
   }
 
-  Widget _ctrlBtn(IconData icon, VoidCallback onTap, {Color color = AppColors.white, double size = 24, String label = ''}) {
+  Widget _ctrlBtn(IconData icon, VoidCallback onTap, {Color color = C.white, double size = 24, String label = ''}) {
     return GestureDetector(
       onTap: onTap,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(
           width: 44, height: 44,
-          decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
+          decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: C.border)),
           child: Icon(icon, color: color, size: size),
         ),
-        if (label.isNotEmpty) Text(label, style: AppTextStyles.caption),
+        if (label.isNotEmpty) Text(label, style: S.caption),
       ]),
     );
   }
@@ -488,8 +488,8 @@ class _NoahTetrisScreenState extends State<NoahTetrisScreen> {
   Widget _ctrlBox(IconData icon, {double size = 28}) {
     return Container(
       width: 56, height: 56,
-      decoration: BoxDecoration(color: AppColors.elevated, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
-      child: Icon(icon, color: AppColors.white, size: size),
+      decoration: BoxDecoration(color: C.elevated, borderRadius: BorderRadius.circular(14), border: Border.all(color: C.border)),
+      child: Icon(icon, color: C.white, size: size),
     );
   }
 }

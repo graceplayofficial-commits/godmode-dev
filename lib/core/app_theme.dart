@@ -1,88 +1,106 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AppColors {
-  static const bg = Color(0xFF0B0B0F);
-  static const surface = Color(0xFF151519);
-  static const elevated = Color(0xFF1C1C22);
-  static const card = Color(0xFF13131A);
+// ══════════════════════════════════════════
+// GOD MODE — Neon Gaming Design System
+// BG: #121212  Surface: #1A1A1A  Accent: #AAFF00
+// ══════════════════════════════════════════
 
-  static const gold = Color(0xFFD4AF37);
-  static const goldLight = Color(0xFFE8D48B);
-  static const goldDark = Color(0xFF8B7420);
-  static const goldSoft = Color(0x18D4AF37);
+class C {
+  // Backgrounds
+  static const bg = Color(0xFF121212);
+  static const surface = Color(0xFF1A1A1A);
+  static const card = Color(0xFF1E1E1E);
+  static const elevated = Color(0xFF252525);
+  static const dimBg = Color(0xFF161616);
 
+  // Neon Accent
+  static const lime = Color(0xFFAAFF00);
+  static const limeDim = Color(0xFF88CC00);
+  static const limeSoft = Color(0x20AAFF00);
+  static const limeMuted = Color(0x40AAFF00);
+
+  // Text
   static const white = Color(0xFFFFFFFF);
-  static const white80 = Color(0xCCFFFFFF);
-  static const white50 = Color(0x80FFFFFF);
-  static const secondary = Color(0xFF8A8A9A);
-  static const muted = Color(0xFF55556A);
+  static const white90 = Color(0xE6FFFFFF);
+  static const white70 = Color(0xB3FFFFFF);
+  static const white40 = Color(0x66FFFFFF);
+  static const grey = Color(0xFF888888);
+  static const greyDark = Color(0xFF555555);
 
-  static const border = Color(0xFF22222E);
-  static const borderLight = Color(0xFF2E2E3A);
+  // Border
+  static const border = Color(0xFF2A2A2A);
+  static const borderLight = Color(0xFF333333);
 
-  static const positive = Color(0xFF4ADE80);
-  static const negative = Color(0xFFEF4444);
+  // Status
+  static const red = Color(0xFFFF4757);
+  static const redSoft = Color(0x30FF4757);
+  static const blue = Color(0xFF3B82F6);
+  static const amber = Color(0xFFFBBF24);
 
-  // Game accent pairs [dark, light]
-  static const noahGreen = Color(0xFF0D3320);
-  static const noahGreenAccent = Color(0xFF34D399);
-  static const omokEmerald = Color(0xFF0D3328);
-  static const omokEmeraldAccent = Color(0xFF6EE7B7);
-  static const rhythmViolet = Color(0xFF1E0A3C);
-  static const rhythmVioletAccent = Color(0xFFA78BFA);
-  static const clickerAmber = Color(0xFF2D1B06);
-  static const clickerAmberAccent = Color(0xFFFBBF24);
-  static const gachaIndigo = Color(0xFF0F0D33);
-  static const gachaIndigoAccent = Color(0xFF818CF8);
+  // Game accent colors
+  static const noahTeal = Color(0xFF0D9488);
+  static const noahTealBg = Color(0xFF0A2D2A);
+  static const omokEmerald = Color(0xFF10B981);
+  static const omokEmeraldBg = Color(0xFF0A2E1F);
+  static const rhythmViolet = Color(0xFF8B5CF6);
+  static const rhythmVioletBg = Color(0xFF1A0F33);
+  static const clickerAmber = Color(0xFFF59E0B);
+  static const clickerAmberBg = Color(0xFF2D1F06);
+  static const gachaBlue = Color(0xFF6366F1);
+  static const gachaBlueBg = Color(0xFF111133);
 
-  static const lane1 = Color(0xFF7B3FE4);
-  static const lane2 = Color(0xFF3F8FE4);
-  static const lane3 = Color(0xFFE4943F);
-  static const lane4 = Color(0xFFE43F6F);
+  static const lane1 = Color(0xFF8B5CF6);
+  static const lane2 = Color(0xFF3B82F6);
+  static const lane3 = Color(0xFFF59E0B);
+  static const lane4 = Color(0xFFEF4444);
 }
 
-class AppTextStyles {
+class S {
+  // Typography
   static TextStyle get displayLarge => GoogleFonts.spaceGrotesk(
-    fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -1.2, height: 1.1, color: AppColors.white,
+    fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -1, height: 1.05, color: C.white,
   );
   static TextStyle get displayMedium => GoogleFonts.spaceGrotesk(
-    fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5, height: 1.15, color: AppColors.white,
+    fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5, height: 1.1, color: C.white,
   );
   static TextStyle get headline => GoogleFonts.spaceGrotesk(
-    fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.white,
+    fontSize: 20, fontWeight: FontWeight.w700, height: 1.15, color: C.white,
   );
   static TextStyle get title => GoogleFonts.spaceGrotesk(
-    fontSize: 17, fontWeight: FontWeight.w700, height: 1.2, color: AppColors.white,
+    fontSize: 17, fontWeight: FontWeight.w700, height: 1.2, color: C.white,
   );
   static TextStyle get cardTitle => GoogleFonts.spaceGrotesk(
-    fontSize: 15, fontWeight: FontWeight.w700, height: 1.3, color: AppColors.white,
+    fontSize: 15, fontWeight: FontWeight.w700, height: 1.3, color: C.white,
   );
   static TextStyle get body => GoogleFonts.spaceGrotesk(
-    fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.white,
+    fontSize: 13, fontWeight: FontWeight.w500, color: C.white,
   );
   static TextStyle get bodySmall => GoogleFonts.spaceGrotesk(
-    fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.secondary,
+    fontSize: 12, fontWeight: FontWeight.w400, height: 1.4, color: C.grey,
   );
   static TextStyle get label => GoogleFonts.spaceGrotesk(
-    fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.5, color: AppColors.gold,
+    fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2.0, color: C.lime,
   );
   static TextStyle get caption => GoogleFonts.spaceGrotesk(
-    fontSize: 10, fontWeight: FontWeight.w500, letterSpacing: 0.8, color: AppColors.muted,
+    fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 0.8, color: C.greyDark,
   );
   static TextStyle get tabLabel => GoogleFonts.spaceGrotesk(
-    fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 0.6,
+    fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.8,
+  );
+  static TextStyle get badge => GoogleFonts.spaceGrotesk(
+    fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.5,
   );
 }
 
 ThemeData buildAppTheme() {
   return ThemeData(
-    scaffoldBackgroundColor: AppColors.bg,
-    colorScheme: const ColorScheme.dark(primary: AppColors.gold, surface: AppColors.surface),
-    textTheme: GoogleFonts.spaceGroteskTextTheme().apply(bodyColor: AppColors.white, displayColor: AppColors.white),
-    appBarTheme: const AppBarTheme(backgroundColor: AppColors.bg, elevation: 0, foregroundColor: AppColors.white),
+    scaffoldBackgroundColor: C.bg,
+    colorScheme: const ColorScheme.dark(primary: C.lime, surface: C.surface),
+    textTheme: GoogleFonts.spaceGroteskTextTheme().apply(bodyColor: C.white, displayColor: C.white),
+    appBarTheme: const AppBarTheme(backgroundColor: C.bg, elevation: 0, foregroundColor: C.white),
     dialogTheme: DialogThemeData(
-      backgroundColor: AppColors.surface,
+      backgroundColor: C.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
   );

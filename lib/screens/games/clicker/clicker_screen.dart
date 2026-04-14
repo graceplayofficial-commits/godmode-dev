@@ -175,7 +175,7 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
         const SizedBox(width: 8),
         Text(m.desc, style: const TextStyle(fontSize: 12)),
       ]),
-      backgroundColor: AppColors.gold,
+      backgroundColor: C.lime,
       behavior: SnackBarBehavior.floating,
       duration: const Duration(seconds: 3),
     ));
@@ -227,14 +227,14 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
   void _showOfflineDialog(double earned) {
     if (!mounted) return;
     showDialog(context: context, builder: (_) => AlertDialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: C.surface,
       title: const Text('⏰ 오프라인 수익'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         const Text('앱을 비운 사이 수익이 쌓였습니다!'),
         const SizedBox(height: 12),
-        Text('+${_fmt(earned)} pt', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.gold)),
+        Text('+${_fmt(earned)} pt', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: C.lime)),
       ]),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('감사합니다!', style: TextStyle(color: AppColors.gold)))],
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('감사합니다!', style: TextStyle(color: C.lime)))],
     ));
   }
 
@@ -271,19 +271,19 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
   void _doPrestige() {
     if (!_canPrestige) return;
     showDialog(context: context, builder: (_) => AlertDialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: C.surface,
       title: const Text('✨ 프레스티지'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         Text('모든 것을 초기화하고\n영구 x${(_prestigeMulti + 0.5).toStringAsFixed(1)} 배율을 얻습니다.', textAlign: TextAlign.center),
         const SizedBox(height: 8),
         Text('현재 배율: x${_prestigeMulti.toStringAsFixed(1)}  →  x${(_prestigeMulti + 0.5).toStringAsFixed(1)}',
-            style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700)),
+            style: const TextStyle(color: C.lime, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
         const Text('"이전 것은 지나갔으니 보라 새 것이 되었도다" (고후 5:17)',
-            style: TextStyle(color: AppColors.secondary, fontSize: 12, fontStyle: FontStyle.italic), textAlign: TextAlign.center),
+            style: TextStyle(color: C.grey, fontSize: 12, fontStyle: FontStyle.italic), textAlign: TextAlign.center),
       ]),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소', style: TextStyle(color: AppColors.secondary))),
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소', style: TextStyle(color: C.grey))),
         TextButton(
           onPressed: () {
             Navigator.pop(context);
@@ -296,7 +296,7 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
             });
             _saveData();
           },
-          child: const Text('프레스티지!', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w800)),
+          child: const Text('프레스티지!', style: TextStyle(color: C.lime, fontWeight: FontWeight.w800)),
         ),
       ],
     ));
@@ -312,9 +312,9 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    if (!_loaded) return const Scaffold(body: Center(child: CircularProgressIndicator(color: AppColors.gold)));
+    if (!_loaded) return const Scaffold(body: Center(child: CircularProgressIndicator(color: C.lime)));
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: C.bg,
       body: SafeArea(child: Column(children: [
         _buildHeader(),
         _buildStageCard(),
@@ -332,36 +332,36 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
           onTap: () { _saveData(); Navigator.pop(context); },
           child: Container(
             width: 36, height: 36,
-            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.border)),
-            child: const Icon(Icons.close_rounded, size: 18, color: AppColors.secondary),
+            decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: C.border)),
+            child: const Icon(Icons.close_rounded, size: 18, color: C.grey),
           ),
         ),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Text('믿음의 왕국', style: AppTextStyles.cardTitle),
+            Text('믿음의 왕국', style: S.cardTitle),
             if (_prestige > 0) ...[
               const SizedBox(width: 6),
               Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [AppColors.goldLight, AppColors.gold]),
+                  gradient: LinearGradient(colors: [C.limeDim, C.lime]),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Text('✨P$_prestige', style: AppTextStyles.caption.copyWith(color: const Color(0xFF1A1400), fontWeight: FontWeight.w800))),
+                child: Text('✨P$_prestige', style: S.caption.copyWith(color: const Color(0xFF1A1400), fontWeight: FontWeight.w800))),
             ],
           ]),
-          Text('초당 ${_fmt(_perSec)} pt  |  탭당 $_tapValue pt', style: AppTextStyles.caption.copyWith(color: AppColors.secondary)),
+          Text('초당 ${_fmt(_perSec)} pt  |  탭당 $_tapValue pt', style: S.caption.copyWith(color: C.grey)),
         ])),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [AppColors.gold.withAlpha(20), AppColors.gold.withAlpha(8)]),
+            gradient: LinearGradient(colors: [C.lime.withAlpha(20), C.lime.withAlpha(8)]),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.gold.withAlpha(30)),
+            border: Border.all(color: C.lime.withAlpha(30)),
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text(_fmt(_pts), style: AppTextStyles.title.copyWith(color: AppColors.gold, fontSize: 18)),
-            Text('누적 ${_fmt(_totalEarned)}', style: AppTextStyles.caption.copyWith(color: AppColors.gold.withAlpha(120))),
+            Text(_fmt(_pts), style: S.title.copyWith(color: C.lime, fontSize: 18)),
+            Text('누적 ${_fmt(_totalEarned)}', style: S.caption.copyWith(color: C.lime.withAlpha(120))),
           ]),
         ),
       ]),
@@ -375,22 +375,22 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14)),
       child: Row(children: [
         Text(s.emoji, style: const TextStyle(fontSize: 36)),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(s.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
           const SizedBox(height: 2),
-          Text(s.verse, style: const TextStyle(fontSize: 10, color: AppColors.secondary, fontStyle: FontStyle.italic)),
+          Text(s.verse, style: const TextStyle(fontSize: 10, color: C.grey, fontStyle: FontStyle.italic)),
           const SizedBox(height: 6),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(value: pct, backgroundColor: AppColors.border,
-                valueColor: const AlwaysStoppedAnimation(AppColors.gold), minHeight: 5),
+            child: LinearProgressIndicator(value: pct, backgroundColor: C.border,
+                valueColor: const AlwaysStoppedAnimation(C.lime), minHeight: 5),
           ),
           if (next != double.infinity)
-            Text('다음: ${_fmt(next)} pt', style: const TextStyle(fontSize: 9, color: AppColors.secondary)),
+            Text('다음: ${_fmt(next)} pt', style: const TextStyle(fontSize: 9, color: C.grey)),
         ])),
         if (_canPrestige)
           GestureDetector(
@@ -402,7 +402,7 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
                 gradient: const LinearGradient(colors: [Color(0xFFFFD700), Color(0xFFFFA500)]),
   
 
-                boxShadow: [BoxShadow(color: AppColors.gold.withAlpha(120), blurRadius: 8)],
+                boxShadow: [BoxShadow(color: C.lime.withAlpha(120), blurRadius: 8)],
               ),
               child: const Column(children: [
                 Text('✨', style: TextStyle(fontSize: 20)),
@@ -427,7 +427,7 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
             builder: (_, __) => Container(width: 200, height: 200, decoration: BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: [BoxShadow(
-                color: AppColors.gold.withAlpha((20 + 50 * _glowCtrl.value).round()),
+                color: C.lime.withAlpha((20 + 50 * _glowCtrl.value).round()),
                 blurRadius: 50 + 20 * _glowCtrl.value, spreadRadius: 8)],
             )),
           ),
@@ -439,8 +439,8 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
               width: 180, height: 180,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(colors: [AppColors.gold.withAlpha(230), const Color(0xFFA07820)]),
-                border: Border.all(color: AppColors.gold, width: 2),
+                gradient: RadialGradient(colors: [C.lime.withAlpha(230), const Color(0xFFA07820)]),
+                border: Border.all(color: C.lime, width: 2),
               ),
               child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text(_stage.emoji, style: const TextStyle(fontSize: 64)),
@@ -463,7 +463,7 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
                 opacity: (1 - t).clamp(0.0, 1.0),
                 child: Transform.translate(
                   offset: Offset(0, -55 * t),
-                  child: Text(p.text, style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.w900, fontSize: 22,
+                  child: Text(p.text, style: const TextStyle(color: C.lime, fontWeight: FontWeight.w900, fontSize: 22,
                       shadows: [Shadow(blurRadius: 6, color: Colors.orange)])),
                 ),
               ),
@@ -471,9 +471,9 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
           )),
           // Stats overlay (top right of tap area)
           Positioned(top: 8, right: 16, child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text('탭 ${_fmt(_totalTaps.toDouble())}회', style: const TextStyle(fontSize: 10, color: AppColors.secondary)),
+            Text('탭 ${_fmt(_totalTaps.toDouble())}회', style: const TextStyle(fontSize: 10, color: C.grey)),
             if (_prestige > 0)
-              Text('x${_prestigeMulti.toStringAsFixed(1)} 배율', style: const TextStyle(fontSize: 10, color: AppColors.gold, fontWeight: FontWeight.w700)),
+              Text('x${_prestigeMulti.toStringAsFixed(1)} 배율', style: const TextStyle(fontSize: 10, color: C.lime, fontWeight: FontWeight.w700)),
           ])),
         ]),
       ),
@@ -484,9 +484,9 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
     return Container(
       height: 240,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: C.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: C.border),
       ),
       child: Column(children: [
         // Tab selector
@@ -497,7 +497,7 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
             const SizedBox(width: 8),
             _tabBtn('💪 탭 강화', 1),
             const Spacer(),
-            Text(_fmt(_pts) + ' pt', style: const TextStyle(fontSize: 11, color: AppColors.gold, fontWeight: FontWeight.w700)),
+            Text(_fmt(_pts) + ' pt', style: const TextStyle(fontSize: 11, color: C.lime, fontWeight: FontWeight.w700)),
           ]),
         ),
         // List
@@ -512,8 +512,8 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
       onTap: () => setState(() => _selectedTab = idx),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        color: active ? AppColors.gold : AppColors.elevated,
-        child: Text(label, style: AppTextStyles.body.copyWith(color: active ? AppColors.bg : AppColors.secondary, fontWeight: FontWeight.w700)),
+        color: active ? C.lime : C.elevated,
+        child: Text(label, style: S.body.copyWith(color: active ? C.bg : C.grey, fontWeight: FontWeight.w700)),
       ),
     );
   }
@@ -532,10 +532,10 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
             margin: const EdgeInsets.only(bottom: 6),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: can ? AppColors.elevated : AppColors.bg,
+              color: can ? C.elevated : C.bg,
 
 
-              border: Border.all(color: can ? AppColors.gold.withAlpha(80) : AppColors.border),
+              border: Border.all(color: can ? C.lime.withAlpha(80) : C.border),
             ),
             child: Row(children: [
               Text(b.emoji, style: const TextStyle(fontSize: 26)),
@@ -547,20 +547,20 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                     decoration: BoxDecoration(
-                      color: b.owned > 0 ? AppColors.gold.withAlpha(40) : AppColors.surface,
+                      color: b.owned > 0 ? C.lime.withAlpha(40) : C.surface,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text('보유 ${b.owned}',
-                        style: TextStyle(fontSize: 10, color: b.owned > 0 ? AppColors.gold : AppColors.secondary, fontWeight: FontWeight.w600)),
+                        style: TextStyle(fontSize: 10, color: b.owned > 0 ? C.lime : C.grey, fontWeight: FontWeight.w600)),
                   ),
                 ]),
                 Text(b.owned > 0 ? '초당 ${_fmt(b.totalPerSec)} pt' : b.desc,
-                    style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+                    style: const TextStyle(fontSize: 11, color: C.grey)),
               ])),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 Text(_fmt(b.nextCost),
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: can ? AppColors.gold : AppColors.secondary)),
-                const Text('pt', style: TextStyle(fontSize: 10, color: AppColors.secondary)),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: can ? C.lime : C.grey)),
+                const Text('pt', style: TextStyle(fontSize: 10, color: C.grey)),
               ]),
             ]),
           ),
@@ -583,23 +583,23 @@ class _ClickerScreenState extends State<ClickerScreen> with TickerProviderStateM
             margin: const EdgeInsets.only(bottom: 6),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: u.bought ? AppColors.surface : (can ? AppColors.elevated : AppColors.bg),
+              color: u.bought ? C.surface : (can ? C.elevated : C.bg),
 
 
-              border: Border.all(color: u.bought ? AppColors.gold.withAlpha(40) : (can ? AppColors.gold.withAlpha(80) : AppColors.border)),
+              border: Border.all(color: u.bought ? C.lime.withAlpha(40) : (can ? C.lime.withAlpha(80) : C.border)),
             ),
             child: Row(children: [
               Text(u.bought ? '✅' : u.emoji, style: const TextStyle(fontSize: 26)),
               const SizedBox(width: 10),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(u.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
-                Text(u.bought ? '구매 완료 (+${u.tapBonus} 탭)' : u.desc, style: const TextStyle(fontSize: 11, color: AppColors.secondary)),
+                Text(u.bought ? '구매 완료 (+${u.tapBonus} 탭)' : u.desc, style: const TextStyle(fontSize: 11, color: C.grey)),
               ])),
               if (!u.bought)
                 Text('${_fmt(u.cost.toDouble())} pt',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: can ? AppColors.gold : AppColors.secondary)),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: can ? C.lime : C.grey)),
               if (u.bought)
-                const Text('+탭 강화', style: TextStyle(fontSize: 11, color: AppColors.gold)),
+                const Text('+탭 강화', style: TextStyle(fontSize: 11, color: C.lime)),
             ]),
           ),
         );

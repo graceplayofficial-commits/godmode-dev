@@ -254,7 +254,7 @@ class _OmokScreenState extends State<OmokScreen> {
     showDialog(
       context: context, barrierDismissible: false,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: C.surface,
         title: Text(playerWon == null ? '무승부!' : (playerWon ? '🎉 승리!' : '🙏 패배')),
         content: Text(
           playerWon == true
@@ -262,11 +262,11 @@ class _OmokScreenState extends State<OmokScreen> {
               : playerWon == false
                   ? '"네 길을 여호와께 맡기라 그를 의지하면 그가 이루시리로다"\n(시 37:5)'
                   : '"서로 화목하라" (막 9:50)',
-          style: const TextStyle(color: AppColors.secondary, fontSize: 13, fontStyle: FontStyle.italic),
+          style: const TextStyle(color: C.grey, fontSize: 13, fontStyle: FontStyle.italic),
         ),
         actions: [TextButton(
           onPressed: () { Navigator.pop(context); setState(() => _newGame()); },
-          child: const Text('다시 도전', style: TextStyle(color: AppColors.gold)),
+          child: const Text('다시 도전', style: TextStyle(color: C.lime)),
         )],
       ),
     );
@@ -274,7 +274,7 @@ class _OmokScreenState extends State<OmokScreen> {
 
   void _changeDifficulty() {
     showModalBottomSheet(
-      context: context, backgroundColor: AppColors.surface,
+      context: context, backgroundColor: C.surface,
       builder: (_) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min, children: [
         const Padding(padding: EdgeInsets.all(16), child: Text('난이도 선택', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16))),
         ...{
@@ -285,7 +285,7 @@ class _OmokScreenState extends State<OmokScreen> {
           leading: Text(e.value.$1, style: const TextStyle(fontSize: 24)),
           title: Text(e.key, style: const TextStyle(fontWeight: FontWeight.w700)),
           subtitle: Text(e.value.$2),
-          trailing: _difficulty == e.key ? const Icon(Icons.check_circle, color: AppColors.gold) : null,
+          trailing: _difficulty == e.key ? const Icon(Icons.check_circle, color: C.lime) : null,
           onTap: () { Navigator.pop(context); setState(() { _difficulty = e.key; _newGame(); }); },
         )),
         const SizedBox(height: 8),
@@ -296,7 +296,7 @@ class _OmokScreenState extends State<OmokScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: C.bg,
       body: SafeArea(child: Column(children: [
         _buildHeader(),
         _buildScoreBar(),
@@ -314,14 +314,14 @@ class _OmokScreenState extends State<OmokScreen> {
           onTap: () => Navigator.pop(context),
           child: Container(
             width: 36, height: 36,
-            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.border)),
-            child: const Icon(Icons.close_rounded, size: 18, color: AppColors.secondary),
+            decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: C.border)),
+            child: const Icon(Icons.close_rounded, size: 18, color: C.grey),
           ),
         ),
         const SizedBox(width: 12),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('예수님과 오목', style: AppTextStyles.cardTitle),
-          Text('야곱의 씨름', style: AppTextStyles.caption.copyWith(color: AppColors.secondary)),
+          Text('예수님과 오목', style: S.cardTitle),
+          Text('야곱의 씨름', style: S.caption.copyWith(color: C.grey)),
         ]),
         const Spacer(),
         GestureDetector(
@@ -329,11 +329,11 @@ class _OmokScreenState extends State<OmokScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.omokEmerald,
+              color: C.omokEmerald,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.omokEmeraldAccent.withAlpha(30)),
+              border: Border.all(color: C.omokEmerald.withAlpha(30)),
             ),
-            child: Text('⚔️ $_difficulty', style: AppTextStyles.body.copyWith(color: AppColors.omokEmeraldAccent)),
+            child: Text('⚔️ $_difficulty', style: S.body.copyWith(color: C.omokEmerald)),
           ),
         ),
       ]),
@@ -344,16 +344,16 @@ class _OmokScreenState extends State<OmokScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(12)),
       child: Row(children: [
         _scoreChip('나 (흑)', _playerWins, true, _playerTurn && !_gameOver),
         const Spacer(),
         if (_aiThinking)
-          const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold))
+          const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: C.lime))
         else
           Text(
             _gameOver ? '게임 종료' : (_playerTurn ? '내 차례 ⚫' : '예수님 차례 ⚪'),
-            style: const TextStyle(fontSize: 12, color: AppColors.secondary),
+            style: const TextStyle(fontSize: 12, color: C.grey),
           ),
         const Spacer(),
         _scoreChip('예수님 (백)', _aiWins, false, !_playerTurn && !_gameOver),
@@ -368,14 +368,14 @@ class _OmokScreenState extends State<OmokScreen> {
         decoration: BoxDecoration(
           color: isBlack ? Colors.black : Colors.white,
           shape: BoxShape.circle,
-          border: Border.all(color: active ? AppColors.gold : AppColors.border, width: active ? 2.5 : 1),
-          boxShadow: active ? [BoxShadow(color: AppColors.gold.withAlpha(100), blurRadius: 8)] : null,
+          border: Border.all(color: active ? C.lime : C.border, width: active ? 2.5 : 1),
+          boxShadow: active ? [BoxShadow(color: C.lime.withAlpha(100), blurRadius: 8)] : null,
         ),
       ),
       const SizedBox(width: 6),
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-        Text('$wins승', style: const TextStyle(fontSize: 10, color: AppColors.secondary)),
+        Text('$wins승', style: const TextStyle(fontSize: 10, color: C.grey)),
       ]),
     ]);
   }
@@ -424,7 +424,7 @@ class _OmokScreenState extends State<OmokScreen> {
           onPressed: _history.length >= 2 && !_gameOver && !_aiThinking ? _undo : null,
           icon: const Icon(Icons.undo, size: 16),
           label: const Text('무르기'),
-          style: OutlinedButton.styleFrom(foregroundColor: AppColors.secondary, side: const BorderSide(color: AppColors.border)),
+          style: OutlinedButton.styleFrom(foregroundColor: C.grey, side: const BorderSide(color: C.border)),
         )),
         const SizedBox(width: 8),
         Expanded(flex: 2, child: ElevatedButton.icon(
@@ -433,7 +433,7 @@ class _OmokScreenState extends State<OmokScreen> {
           label: Text(_gameOver ? '다시 도전' : '새 게임'),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF2D6A2D),
-            foregroundColor: AppColors.white,
+            foregroundColor: C.white,
           ),
         )),
         const SizedBox(width: 8),
@@ -441,7 +441,7 @@ class _OmokScreenState extends State<OmokScreen> {
           onPressed: _changeDifficulty,
           icon: const Icon(Icons.tune, size: 16),
           label: const Text('난이도'),
-          style: OutlinedButton.styleFrom(foregroundColor: AppColors.secondary, side: const BorderSide(color: AppColors.border)),
+          style: OutlinedButton.styleFrom(foregroundColor: C.grey, side: const BorderSide(color: C.border)),
         )),
       ]),
     );
@@ -505,7 +505,7 @@ class _OmokPainter extends CustomPainter {
 
         // Win ring
         if (isWin) {
-          canvas.drawCircle(Offset(cx, cy), radius + 2, Paint()..color = AppColors.gold..style = PaintingStyle.stroke..strokeWidth = 3);
+          canvas.drawCircle(Offset(cx, cy), radius + 2, Paint()..color = C.lime..style = PaintingStyle.stroke..strokeWidth = 3);
         }
 
         // Last move dot
