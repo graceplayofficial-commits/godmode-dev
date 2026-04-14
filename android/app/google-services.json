@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "622916179546",
+    "project_id": "godmode-3818f",
+    "storage_bucket": "godmode-3818f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:622916179546:android:4d2d2715cf97eee665ea63",
+        "android_client_info": {
+          "package_name": "com.example.godmode"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD05JZXNYSYIaWlqpNC9Xldx_4VfWKkWYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
