@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import '../../core/app_theme.dart';
 
 class ReelsScreen extends StatefulWidget {
@@ -41,6 +42,7 @@ class _ReelsScreenState extends State<ReelsScreen> {
         _currentPage = 0;
       });
     } catch (e) {
+      debugPrint('Firestore error: $e');
       setState(() => _loading = false);
     }
   }
@@ -49,15 +51,12 @@ class _ReelsScreenState extends State<ReelsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        // Video feed
         if (_loading)
           const Center(child: CircularProgressIndicator(color: C.lime, strokeWidth: 2))
         else if (_videos.isEmpty)
           _emptyState()
         else
           _videoFeed(),
-
-        // Header overlay
         Positioned(left: 0, right: 0, top: 0, child: _headerOverlay()),
       ]),
     );
@@ -69,11 +68,10 @@ class _ReelsScreenState extends State<ReelsScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter, end: Alignment.bottomCenter,
-          colors: [C.bg.withAlpha(200), C.bg.withAlpha(0)],
+          colors: [C.bg.withAlpha(220), C.bg.withAlpha(0)],
         ),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Logo row
         Row(children: [
           RichText(text: TextSpan(children: [
             TextSpan(text: 'GOD', style: S.headline.copyWith(color: C.lime, fontWeight: FontWeight.w800)),
@@ -85,7 +83,6 @@ class _ReelsScreenState extends State<ReelsScreen> {
           _iconBtn(Icons.notifications_none_rounded),
         ]),
         const SizedBox(height: 12),
-        // Category pills
         SizedBox(
           height: 34,
           child: ListView.separated(
@@ -145,8 +142,7 @@ class _ReelsScreenState extends State<ReelsScreen> {
         Container(
           width: 64, height: 64,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: C.limeSoft,
+            shape: BoxShape.circle, color: C.limeSoft,
             border: Border.all(color: C.lime.withAlpha(30)),
           ),
           child: const Icon(Icons.play_arrow_rounded, color: C.lime, size: 28),
@@ -167,50 +163,79 @@ class _ReelPage extends StatefulWidget {
 }
 
 class _ReelPageState extends State<_ReelPage> {
-  late YoutubePlayerController _ctrl;
+  WebViewController? _ctrl;
+  bool _loaded = false;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = YoutubePlayerController.fromVideoId(
-      videoId: widget.video['videoId'] ?? '',
-      autoPlay: widget.isActive,
-      params: const YoutubePlayerParams(
-        showControls: false,
-        showFullscreenButton: false,
-        loop: true,
-        mute: false,
-        playsInline: true,
-      ),
-    );
-  }
-
-  @override
-  void didUpdateWidget(_ReelPage old) {
-    super.didUpdateWidget(old);
-    if (widget.isActive && !old.isActive) {
-      _ctrl.playVideo();
-    } else if (!widget.isActive && old.isActive) {
-      _ctrl.pauseVideo();
+    // WebView는 Android/iOS에서만
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      _initWebView();
     }
   }
 
-  @override
-  void dispose() {
-    _ctrl.close();
-    super.dispose();
+  void _initWebView() {
+    final videoId = widget.video['videoId'] ?? '';
+    _ctrl = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0xFF000000))
+      ..setNavigationDelegate(NavigationDelegate(
+        onPageFinished: (_) => setState(() => _loaded = true),
+      ))
+      ..loadRequest(Uri.parse('https://www.youtube.com/shorts/$videoId'));
   }
 
   @override
   Widget build(BuildContext context) {
     final v = widget.video;
-    return Stack(children: [
-      // Full-screen YouTube player
-      Positioned.fill(
-        child: YoutubePlayer(controller: _ctrl),
-      ),
+    final thumbnail = v['thumbnail'] ?? '';
 
-      // Bottom gradient
+    return Stack(children: [
+      // 배경: 썸네일 블러
+      if (thumbnail.isNotEmpty)
+        Positioned.fill(
+          child: Image.network(thumbnail, fit: BoxFit.cover,
+            color: Colors.black.withAlpha(120), colorBlendMode: BlendMode.darken,
+            errorBuilder: (_, __, ___) => Container(color: C.bg)),
+        ),
+
+      // WebView 영상 (모바일만)
+      if (_ctrl != null)
+        Positioned.fill(
+          child: AnimatedOpacity(
+            opacity: _loaded ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 500),
+            child: WebViewWidget(controller: _ctrl!),
+          ),
+        ),
+
+      // 데스크톱 fallback
+      if (_ctrl == null)
+        Positioned.fill(
+          child: Container(
+            color: C.bg,
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              if (thumbnail.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(thumbnail, width: 280, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox()),
+                ),
+              const SizedBox(height: 16),
+              Text(v['title'] ?? '', style: S.cardTitle, textAlign: TextAlign.center),
+              const SizedBox(height: 8),
+              Text(v['channelName'] ?? '', style: S.bodySmall),
+            ]),
+          ),
+        ),
+
+      // 로딩 인디케이터
+      if (_ctrl != null && !_loaded)
+        const Center(child: CircularProgressIndicator(color: C.lime, strokeWidth: 2)),
+
+      // 하단 그라데이션
       Positioned(left: 0, right: 0, bottom: 0, child: Container(
         height: 200,
         decoration: BoxDecoration(gradient: LinearGradient(
@@ -219,11 +244,10 @@ class _ReelPageState extends State<_ReelPage> {
         )),
       )),
 
-      // Video info
+      // 영상 정보
       Positioned(
         left: 16, right: 80, bottom: 100,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Channel
           Row(children: [
             Container(
               width: 28, height: 28,
@@ -245,7 +269,6 @@ class _ReelPageState extends State<_ReelPage> {
             )),
           ]),
           const SizedBox(height: 8),
-          // Title
           Text(
             v['title'] ?? '',
             style: S.cardTitle.copyWith(height: 1.4),
@@ -254,7 +277,7 @@ class _ReelPageState extends State<_ReelPage> {
         ]),
       ),
 
-      // Right side actions
+      // 오른쪽 액션 버튼
       Positioned(
         right: 12, bottom: 110,
         child: Column(children: [

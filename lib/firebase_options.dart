@@ -33,10 +33,7 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -64,6 +61,16 @@ class DefaultFirebaseOptions {
     projectId: 'godmode-3818f',
     storageBucket: 'godmode-3818f.firebasestorage.app',
     iosBundleId: 'com.example.godmode',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAJMrbnGDumlTKaJp0eXNP_9PfQrkH6-ck',
+    appId: '1:622916179546:web:0b7a62e19a11fcbe65ea63',
+    messagingSenderId: '622916179546',
+    projectId: 'godmode-3818f',
+    authDomain: 'godmode-3818f.firebaseapp.com',
+    storageBucket: 'godmode-3818f.firebasestorage.app',
+    measurementId: 'G-QJ1HZ73DDD',
   );
 
 }
