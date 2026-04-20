@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/app_theme.dart';
+import 'test_data.dart';
+import 'test_screen.dart';
 
 class TestHubScreen extends StatelessWidget {
   const TestHubScreen({super.key});
@@ -56,7 +58,7 @@ class TestHubScreen extends StatelessWidget {
   // ── 히어로 테스트: 큰 카드, 캐릭터 일러스트 영역, CTA 버튼
   Widget _heroTest(BuildContext context) {
     return GestureDetector(
-      onTap: () => _coming(context),
+      onTap: () => _goTest(context, mbtiTest),
       child: Container(
         margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         decoration: BoxDecoration(
@@ -148,9 +150,9 @@ class TestHubScreen extends StatelessWidget {
   // ── 빠른 테스트: 가로 스크롤 정사각형 카드
   Widget _quickTests(BuildContext context) {
     final tests = [
-      _Q('🙏', '기도 스타일', '4유형', C.rhythmViolet),
-      _Q('📖', '암송 레벨', '5단계', C.noahTeal),
-      _Q('🕊️', '은사 테스트', '7유형', C.gachaBlue),
+      _Q('🙏', '기도 스타일', '4유형', C.rhythmViolet, prayerTest),
+      _Q('📖', '암송 레벨', '5단계', C.noahTeal, bibleTest),
+      _Q('🕊️', '은사 테스트', '7유형', C.gachaBlue, giftTest),
     ];
     return SizedBox(
       height: 130,
@@ -162,7 +164,7 @@ class TestHubScreen extends StatelessWidget {
         itemBuilder: (_, i) {
           final q = tests[i];
           return GestureDetector(
-            onTap: () => _coming(context),
+            onTap: () => _goTest(context, q.testDef, isBible: q.testDef.id == 'bible'),
             child: Container(
               width: 130,
               padding: const EdgeInsets.all(14),
@@ -214,13 +216,13 @@ class TestHubScreen extends StatelessWidget {
   // ── 전체 테스트 리스트
   List<Widget> _fullList(BuildContext context) {
     final tests = [
-      _T('🔮', '신앙 성격 MBTI', '12문항 · 8가지 유형', '1.2K명 참여', C.lime),
-      _T('🙏', '나의 기도 스타일', '8문항 · 4가지 유형', '843명 참여', C.rhythmViolet),
-      _T('📖', '말씀 암송 레벨', '10문항 · 5단계', '621명 참여', C.noahTeal),
-      _T('🕊️', '신앙 은사 테스트', '15문항 · 7가지 유형', '458명 참여', C.gachaBlue),
+      _T('🔮', '신앙 성격 MBTI', '12문항 · 8가지 유형', '1.2K명 참여', C.lime, mbtiTest, false),
+      _T('🙏', '나의 기도 스타일', '8문항 · 4가지 유형', '843명 참여', C.rhythmViolet, prayerTest, false),
+      _T('📖', '말씀 암송 레벨', '10문항 · 5단계', '621명 참여', C.noahTeal, bibleTest, true),
+      _T('🕊️', '신앙 은사 테스트', '15문항 · 7가지 유형', '458명 참여', C.gachaBlue, giftTest, false),
     ];
     return tests.map((t) => GestureDetector(
-      onTap: () => _coming(context),
+      onTap: () => _goTest(context, t.testDef, isBible: t.isBible),
       child: Container(
         margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
         padding: const EdgeInsets.all(16),
@@ -264,11 +266,9 @@ class TestHubScreen extends StatelessWidget {
     )).toList();
   }
 
-  void _coming(BuildContext ctx) {
-    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-      content: Text('곧 준비됩니다!', style: S.body.copyWith(color: C.bg)),
-      backgroundColor: C.lime, behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  void _goTest(BuildContext ctx, TestDef test, {bool isBible = false}) {
+    Navigator.push(ctx, MaterialPageRoute(
+      builder: (_) => TestScreen(test: test, isBibleTest: isBible),
     ));
   }
 }
@@ -276,11 +276,14 @@ class TestHubScreen extends StatelessWidget {
 class _Q {
   final String emoji, title, result;
   final Color accent;
-  const _Q(this.emoji, this.title, this.result, this.accent);
+  final TestDef testDef;
+  const _Q(this.emoji, this.title, this.result, this.accent, this.testDef);
 }
 
 class _T {
   final String emoji, title, desc, social;
   final Color accent;
-  const _T(this.emoji, this.title, this.desc, this.social, this.accent);
+  final TestDef testDef;
+  final bool isBible;
+  const _T(this.emoji, this.title, this.desc, this.social, this.accent, this.testDef, this.isBible);
 }
