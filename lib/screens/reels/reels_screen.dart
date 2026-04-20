@@ -16,6 +16,7 @@ class _ReelsScreenState extends State<ReelsScreen> {
   List<Map<String, dynamic>> _videos = [];
   bool _loading = true;
   int _currentPage = 0;
+  bool _headerVisible = true;
 
   @override
   void initState() {
@@ -30,11 +31,9 @@ class _ReelsScreenState extends State<ReelsScreen> {
           .collection('videos')
           .orderBy('publishedAt', descending: true)
           .limit(50);
-
       if (_catIdx > 0) {
         query = query.where('category', isEqualTo: _categories[_catIdx]);
       }
-
       final snap = await query.get();
       setState(() {
         _videos = snap.docs.map((d) => d.data() as Map<String, dynamic>).toList();
@@ -50,80 +49,89 @@ class _ReelsScreenState extends State<ReelsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(children: [
+        // Video feed
         if (_loading)
           const Center(child: CircularProgressIndicator(color: C.lime, strokeWidth: 2))
         else if (_videos.isEmpty)
           _emptyState()
         else
           _videoFeed(),
-        Positioned(left: 0, right: 0, top: 0, child: _headerOverlay()),
+
+        // 탭 시 헤더 토글
+        if (!_loading && _videos.isNotEmpty)
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => setState(() => _headerVisible = !_headerVisible),
+              child: const SizedBox(),
+            ),
+          ),
+
+        // Header — 탭하면 숨김/표시
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          left: 0, right: 0,
+          top: _headerVisible ? 0 : -120,
+          child: _header(),
+        ),
       ]),
     );
   }
 
-  Widget _headerOverlay() {
+  Widget _header() {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 8, 20, 0),
+      padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 6, 16, 10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter, end: Alignment.bottomCenter,
-          colors: [C.bg.withAlpha(220), C.bg.withAlpha(0)],
+          colors: [Colors.black.withAlpha(180), Colors.black.withAlpha(80), Colors.transparent],
         ),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // Logo row — 컴팩트
         Row(children: [
           RichText(text: TextSpan(children: [
-            TextSpan(text: 'GOD', style: S.headline.copyWith(color: C.lime, fontWeight: FontWeight.w800)),
-            TextSpan(text: 'Mode', style: S.headline.copyWith(fontWeight: FontWeight.w400)),
+            TextSpan(text: 'GOD', style: S.title.copyWith(color: C.lime, fontWeight: FontWeight.w800, fontSize: 16)),
+            TextSpan(text: 'Mode', style: S.title.copyWith(fontWeight: FontWeight.w400, fontSize: 16)),
           ])),
+          const SizedBox(width: 6),
+          Text('릴스', style: S.caption.copyWith(color: C.white70)),
           const Spacer(),
-          _iconBtn(Icons.search_rounded),
-          const SizedBox(width: 8),
-          _iconBtn(Icons.notifications_none_rounded),
+          Text('${_currentPage + 1}/${_videos.length}', style: S.caption.copyWith(color: C.white40)),
         ]),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
+        // Categories — 컴팩트
         SizedBox(
-          height: 34,
+          height: 30,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            separatorBuilder: (_, __) => const SizedBox(width: 6),
+            separatorBuilder: (_, __) => const SizedBox(width: 5),
             itemCount: _categories.length,
             itemBuilder: (_, i) {
               final on = i == _catIdx;
               return GestureDetector(
-                onTap: () { setState(() => _catIdx = i); _loadVideos(); },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                onTap: () { setState(() { _catIdx = i; _headerVisible = true; }); _loadVideos(); },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: on ? C.lime : C.white.withAlpha(12),
-                    borderRadius: BorderRadius.circular(10),
-                    border: on ? null : Border.all(color: C.white.withAlpha(8)),
+                    color: on ? C.lime : Colors.white.withAlpha(15),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(_categories[i], style: S.body.copyWith(
-                    color: on ? C.bg : C.white70,
+                    color: on ? Colors.black : C.white70,
                     fontWeight: on ? FontWeight.w700 : FontWeight.w500,
+                    fontSize: 12,
                   )),
                 ),
               );
             },
           ),
         ),
-        const SizedBox(height: 8),
       ]),
-    );
-  }
-
-  Widget _iconBtn(IconData icon) {
-    return Container(
-      width: 36, height: 36,
-      decoration: BoxDecoration(
-        color: C.white.withAlpha(10), borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: C.white.withAlpha(8)),
-      ),
-      child: Icon(icon, color: C.white70, size: 18),
     );
   }
 
@@ -131,7 +139,7 @@ class _ReelsScreenState extends State<ReelsScreen> {
     return PageView.builder(
       scrollDirection: Axis.vertical,
       itemCount: _videos.length,
-      onPageChanged: (i) => setState(() => _currentPage = i),
+      onPageChanged: (i) => setState(() { _currentPage = i; _headerVisible = false; }),
       itemBuilder: (ctx, i) => _ReelPage(video: _videos[i], isActive: i == _currentPage),
     );
   }
@@ -166,10 +174,44 @@ class _ReelPageState extends State<_ReelPage> {
   WebViewController? _ctrl;
   bool _loaded = false;
 
+  // YouTube Shorts를 깔끔하게 보여주기 위한 CSS/JS 주입
+  static const _injectedCSS = '''
+    /* YouTube 상단 내비게이션 숨김 */
+    #header, ytm-mobile-topbar-renderer, .mobile-topbar-header,
+    .ytm-autonav-bar, header, .player-controls-top,
+    ytm-pivot-bar-renderer, .pivot-bar {
+      display: none !important;
+    }
+    /* YouTube 하단 내비게이션 숨김 */
+    ytm-bottom-bar-container, .bottom-bar-container,
+    .ytm-bottom-sheet-overlay {
+      display: none !important;
+    }
+    /* 전체화면 느낌 */
+    body { background: black !important; overflow: hidden !important; }
+    .player-container { margin-top: 0 !important; }
+  ''';
+
+  static const _injectScript = '''
+    var style = document.createElement('style');
+    style.textContent = `$_injectedCSS`;
+    document.head.appendChild(style);
+
+    // 반복 주입 (YouTube SPA 대응)
+    var observer = new MutationObserver(function() {
+      if (!document.querySelector('#godmode-style')) {
+        var s = document.createElement('style');
+        s.id = 'godmode-style';
+        s.textContent = `$_injectedCSS`;
+        document.head.appendChild(s);
+      }
+    });
+    observer.observe(document.body, {childList: true, subtree: true});
+  ''';
+
   @override
   void initState() {
     super.initState();
-    // WebView는 Android/iOS에서만
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
       _initWebView();
@@ -180,10 +222,15 @@ class _ReelPageState extends State<_ReelPage> {
     final videoId = widget.video['videoId'] ?? '';
     _ctrl = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0xFF000000))
+      ..setBackgroundColor(Colors.black)
       ..setNavigationDelegate(NavigationDelegate(
-        onPageFinished: (_) => setState(() => _loaded = true),
+        onPageFinished: (_) {
+          // CSS 주입
+          _ctrl?.runJavaScript(_injectScript);
+          if (mounted) setState(() => _loaded = true);
+        },
       ))
+      ..setUserAgent('Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36')
       ..loadRequest(Uri.parse('https://www.youtube.com/shorts/$videoId'));
   }
 
@@ -192,120 +239,54 @@ class _ReelPageState extends State<_ReelPage> {
     final v = widget.video;
     final thumbnail = v['thumbnail'] ?? '';
 
-    return Stack(children: [
-      // 배경: 썸네일 블러
-      if (thumbnail.isNotEmpty)
-        Positioned.fill(
-          child: Image.network(thumbnail, fit: BoxFit.cover,
-            color: Colors.black.withAlpha(120), colorBlendMode: BlendMode.darken,
-            errorBuilder: (_, __, ___) => Container(color: C.bg)),
-        ),
-
-      // WebView 영상 (모바일만)
-      if (_ctrl != null)
-        Positioned.fill(
-          child: AnimatedOpacity(
-            opacity: _loaded ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 500),
-            child: WebViewWidget(controller: _ctrl!),
+    return Container(
+      color: Colors.black,
+      child: Stack(children: [
+        // WebView (모바일)
+        if (_ctrl != null)
+          Positioned.fill(
+            child: AnimatedOpacity(
+              opacity: _loaded ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 400),
+              child: WebViewWidget(controller: _ctrl!),
+            ),
           ),
-        ),
 
-      // 데스크톱 fallback
-      if (_ctrl == null)
-        Positioned.fill(
-          child: Container(
-            color: C.bg,
+        // 데스크톱 fallback — 썸네일
+        if (_ctrl == null)
+          Positioned.fill(
             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               if (thumbnail.isNotEmpty)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.network(thumbnail, width: 280, fit: BoxFit.cover,
+                  child: Image.network(thumbnail, width: 300, fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => const SizedBox()),
                 ),
               const SizedBox(height: 16),
-              Text(v['title'] ?? '', style: S.cardTitle, textAlign: TextAlign.center),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Text(v['title'] ?? '', style: S.cardTitle, textAlign: TextAlign.center),
+              ),
               const SizedBox(height: 8),
               Text(v['channelName'] ?? '', style: S.bodySmall),
             ]),
           ),
-        ),
 
-      // 로딩 인디케이터
-      if (_ctrl != null && !_loaded)
-        const Center(child: CircularProgressIndicator(color: C.lime, strokeWidth: 2)),
-
-      // 하단 그라데이션
-      Positioned(left: 0, right: 0, bottom: 0, child: Container(
-        height: 200,
-        decoration: BoxDecoration(gradient: LinearGradient(
-          begin: Alignment.topCenter, end: Alignment.bottomCenter,
-          colors: [Colors.transparent, C.bg.withAlpha(200), C.bg.withAlpha(240)],
-        )),
-      )),
-
-      // 영상 정보
-      Positioned(
-        left: 16, right: 80, bottom: 100,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Container(
-              width: 28, height: 28,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: C.lime.withAlpha(30),
-                border: Border.all(color: C.lime.withAlpha(40)),
-              ),
-              child: Center(child: Text(
-                (v['channelName'] ?? '?')[0],
-                style: S.caption.copyWith(color: C.lime, fontWeight: FontWeight.w800),
-              )),
-            ),
-            const SizedBox(width: 8),
-            Expanded(child: Text(
-              v['channelName'] ?? '',
-              style: S.body.copyWith(fontWeight: FontWeight.w700),
-              overflow: TextOverflow.ellipsis,
-            )),
-          ]),
-          const SizedBox(height: 8),
-          Text(
-            v['title'] ?? '',
-            style: S.cardTitle.copyWith(height: 1.4),
-            maxLines: 2, overflow: TextOverflow.ellipsis,
-          ),
-        ]),
-      ),
-
-      // 오른쪽 액션 버튼
-      Positioned(
-        right: 12, bottom: 110,
-        child: Column(children: [
-          _actionBtn(Icons.favorite_outline_rounded, '좋아요'),
-          const SizedBox(height: 16),
-          _actionBtn(Icons.chat_bubble_outline_rounded, '댓글'),
-          const SizedBox(height: 16),
-          _actionBtn(Icons.share_rounded, '공유'),
-          const SizedBox(height: 16),
-          _actionBtn(Icons.bookmark_outline_rounded, '저장'),
-        ]),
-      ),
-    ]);
-  }
-
-  Widget _actionBtn(IconData icon, String label) {
-    return Column(children: [
-      Container(
-        width: 42, height: 42,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: C.white.withAlpha(15),
-          border: Border.all(color: C.white.withAlpha(10)),
-        ),
-        child: Icon(icon, color: C.white, size: 20),
-      ),
-      const SizedBox(height: 4),
-      Text(label, style: S.caption.copyWith(color: C.white70)),
-    ]);
+        // 로딩 — 썸네일 배경 + 스피너
+        if (_ctrl != null && !_loaded)
+          Positioned.fill(child: Container(
+            color: Colors.black,
+            child: Stack(children: [
+              if (thumbnail.isNotEmpty)
+                Center(child: Opacity(
+                  opacity: 0.3,
+                  child: Image.network(thumbnail, width: 250, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox()),
+                )),
+              const Center(child: CircularProgressIndicator(color: C.lime, strokeWidth: 2)),
+            ]),
+          )),
+      ]),
+    );
   }
 }
