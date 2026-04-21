@@ -254,3 +254,38 @@ exports.listShorts = onRequest({ invoker: "public" }, async (req, res) => {
   const videos = snapshot.docs.map((doc) => doc.data());
   res.json({ count: videos.length, videos });
 });
+
+// 5) 샘플 커뮤니티 게시물 생성
+exports.seedPosts = onRequest({ invoker: "public" }, async (req, res) => {
+  const posts = [
+    { nickname: "은혜충만", profileEmoji: "🙏", category: "자유", title: "오늘 새벽예배 은혜 넘쳤어요", content: "요즘 새벽예배를 시작했는데 정말 하루가 달라졌어요. 힘들지만 그만큼 은혜가 크네요. 새벽예배 드시는 분들 화이팅입니다! 🔥" },
+    { nickname: "말씀묵상러", profileEmoji: "📖", category: "말씀나눔", title: "로마서 8:28 묵상 나눔", content: "\"하나님을 사랑하는 자 곧 그의 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라\"\n\n요즘 힘든 시간을 보내고 있었는데, 이 말씀이 큰 위로가 됐어요. 지금 겪는 어려움도 하나님의 큰 그림 안에서는 선을 이루는 과정이라는 걸 믿습니다." },
+    { nickname: "찬양워십퍼", profileEmoji: "🎵", category: "자유", title: "찬양팀 합류했습니다!", content: "드디어 교회 찬양팀에 합류했어요! 보컬로 참여하게 됐는데 떨리면서도 설레요. 하나님께 최선의 예배를 드리고 싶습니다. 찬양팀 하시는 분들 팁 좀 부탁드려요 😊" },
+    { nickname: "기도요청자", profileEmoji: "💪", category: "기도요청", title: "취업 준비 중인데 기도 부탁드려요", content: "대학 졸업 후 취업 준비 중입니다. 면접을 여러 번 봤는데 계속 떨어지고 있어요. 포기하고 싶을 때도 있지만 하나님의 때가 있다고 믿고 있습니다. 중보기도 부탁드립니다 🙏" },
+    { nickname: "감사일기", profileEmoji: "✨", category: "간증", title: "교통사고에서 보호받은 간증", content: "지난주 운전 중에 큰 사고가 날 뻔했어요. 앞차가 갑자기 급정거해서 정말 위험한 순간이었는데, 기적적으로 피할 수 있었습니다.\n\n사고 직후에 차를 세우고 감사기도를 드렸어요. 하나님이 정말 살아계시다는 걸 또 한번 경험했습니다." },
+    { nickname: "대학부청년", profileEmoji: "⚡", category: "자유", title: "GOD MODE 앱 너무 좋아요!", content: "이 앱 발견하고 매일 들어와요ㅋㅋ 게임도 재밌고 릴스로 기독교 영상 보는 것도 좋아요. 특히 오목은 중독성 있어서 출퇴근 길에 항상 해요 ♟️" },
+    { nickname: "선교사지망생", profileEmoji: "🌍", category: "기도요청", title: "단기선교 출발합니다", content: "이번 여름에 캄보디아 단기선교를 떠납니다. 첫 선교라 긴장도 되지만 기대가 더 커요. 현지 아이들에게 복음을 전할 수 있기를 바랍니다. 팀 전체를 위해 기도 부탁드려요! ✈️" },
+    { nickname: "말씀암송왕", profileEmoji: "👑", category: "말씀나눔", title: "빌립보서 4:13 암송 챌린지", content: "\"내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라\"\n\n이번 주 암송 말씀입니다. 같이 외워보실 분! 매일 10번씩 소리내어 읽으면 일주일이면 외워져요. 함께 도전해봐요! 💪" },
+  ];
+
+  const batch = db.batch();
+  for (const post of posts) {
+    const ref = db.collection("boards").doc();
+    batch.set(ref, {
+      uid: "system",
+      nickname: post.nickname,
+      profileEmoji: post.profileEmoji,
+      title: post.title,
+      content: post.content,
+      category: post.category,
+      likeCount: Math.floor(Math.random() * 20) + 1,
+      commentCount: 0,
+      likedBy: [],
+      createdAt: admin.firestore.Timestamp.fromDate(
+        new Date(Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000))
+      ),
+    });
+  }
+  await batch.commit();
+  res.json({ success: true, count: posts.length });
+});
