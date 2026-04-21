@@ -4,7 +4,9 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   cloud_firestore
+  firebase_auth
   firebase_core
+  media_kit_video
   url_launcher_windows
 )
 

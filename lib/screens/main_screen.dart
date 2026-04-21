@@ -5,6 +5,8 @@ import '../core/app_theme.dart';
 import 'reels/reels_screen.dart';
 import 'test/test_hub_screen.dart';
 import 'games/game_hub_screen.dart';
+import 'community/community_screen.dart';
+import 'settings/settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,7 +16,13 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _idx = 2;
-  final _screens = const [ReelsScreen(), TestHubScreen(), GameHubScreen()];
+  final _screens = const [
+    ReelsScreen(),
+    TestHubScreen(),
+    GameHubScreen(),
+    CommunityScreen(),
+    SettingsScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +39,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _tabBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.of(context).padding.bottom + 10),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(context).padding.bottom + 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter, end: Alignment.bottomCenter,
@@ -40,21 +48,23 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
           child: Container(
-            height: 60,
-            padding: const EdgeInsets.all(4),
+            height: 56,
+            padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               color: C.surface.withAlpha(200),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(18),
               border: Border.all(color: C.border),
             ),
             child: Row(children: [
               _tab(Icons.play_circle_rounded, 'REELS', 0),
               _tab(Icons.psychology_rounded, 'TEST', 1),
               _tab(Icons.sports_esports_rounded, 'GAMES', 2),
+              _tab(Icons.forum_rounded, '커뮤니티', 3),
+              _tab(Icons.settings_rounded, '설정', 4),
             ]),
           ),
         ),
@@ -73,13 +83,14 @@ class _MainScreenState extends State<MainScreen> {
           height: double.infinity,
           decoration: BoxDecoration(
             color: on ? C.lime : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: on ? [BoxShadow(color: C.lime.withAlpha(40), blurRadius: 16)] : null,
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(icon, color: on ? C.bg : C.greyDark, size: 20),
-            const SizedBox(height: 2),
-            Text(label, style: S.tabLabel.copyWith(color: on ? C.bg : C.greyDark)),
+            Icon(icon, color: on ? C.bg : C.greyDark, size: 18),
+            const SizedBox(height: 1),
+            Text(label, style: S.tabLabel.copyWith(
+              color: on ? C.bg : C.greyDark, fontSize: 8,
+            )),
           ]),
         ),
       ),

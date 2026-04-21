@@ -2,13 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'core/app_theme.dart';
+import 'services/auth_service.dart';
 import 'screens/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Firebase: Android/iOS만 설정됨 — 그 외 플랫폼은 skip
+  MediaKit.ensureInitialized();
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   } catch (e) {
@@ -23,11 +26,14 @@ class GodModeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'GODMode',
-      debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
-      home: const MainScreen(),
+    return ChangeNotifierProvider(
+      create: (_) => AuthService(),
+      child: MaterialApp(
+        title: 'GODMode',
+        debugShowCheckedModeBanner: false,
+        theme: buildAppTheme(),
+        home: const MainScreen(),
+      ),
     );
   }
 }
