@@ -1,12 +1,15 @@
 package com.example.godmode
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.view.View
-import android.widget.FrameLayout
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -19,69 +22,141 @@ class YoutubePlayerPlatformView(
     params: Map<*, *>
 ) : PlatformView, MethodChannel.MethodCallHandler {
 
-    private val container = FrameLayout(context)
-    private val playerView: YouTubePlayerView
-    private var youtubePlayer: YouTubePlayer? = null
+    private val webView: WebView
     private val channel: MethodChannel
-    private val videoId: String = params["videoId"] as? String ?: ""
-    private val autoPlay: Boolean = params["autoPlay"] as? Boolean ?: false
+    private val videoId: String
+    private val autoPlay: Boolean
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     init {
+        videoId = params["videoId"]?.toString() ?: ""
+        autoPlay = params["autoPlay"] == true
+        android.util.Log.d("YTPlayer", "init videoId=$videoId autoPlay=$autoPlay")
+
         channel = MethodChannel(messenger, "youtube-player-$viewId")
         channel.setMethodCallHandler(this)
 
-        playerView = YouTubePlayerView(context)
+        // 쿠키 허용 (YouTube 재생에 필수)
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.setAcceptCookie(true)
 
-        val options = IFramePlayerOptions.Builder()
-            .controls(0)
-            .rel(0)
-            .ivLoadPolicy(3)
-            .ccLoadPolicy(0)
-            .build()
-
-        playerView.enableAutomaticInitialization = false
-        playerView.initialize(object : AbstractYouTubePlayerListener() {
-            override fun onReady(player: YouTubePlayer) {
-                youtubePlayer = player
-                if (autoPlay && videoId.isNotEmpty()) {
-                    player.loadVideo(videoId, 0f)
-                } else if (videoId.isNotEmpty()) {
-                    player.cueVideo(videoId, 0f)
-                }
-                channel.invokeMethod("onReady", null)
+        webView = WebView(context).apply {
+            settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                mediaPlaybackRequiresUserGesture = false
+                cacheMode = WebSettings.LOAD_DEFAULT
+                allowFileAccess = false
+                // 브라우저처럼 보이게 UA 설정 (YouTube가 WebView UA 차단하는 경우 대비)
+                userAgentString = "Mozilla/5.0 (Linux; Android 12; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36"
             }
+            setBackgroundColor(0xFF000000.toInt())
+            webViewClient = WebViewClient()
+            webChromeClient = WebChromeClient()
+            addJavascriptInterface(PlayerBridge(), "Android")
+        }
 
-            override fun onError(player: YouTubePlayer, error: com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerError) {
-                channel.invokeMethod("onError", error.name)
-            }
+        // 써드파티 쿠키 허용 (YouTube iframe 필수)
+        cookieManager.setAcceptThirdPartyCookies(webView, true)
 
-            override fun onStateChange(player: YouTubePlayer, state: com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState) {
-                channel.invokeMethod("onStateChange", state.name)
-                // 영상 끝나면 반복 재생
-                if (state == com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState.ENDED) {
-                    player.seekTo(0f)
-                    player.play()
-                }
-            }
-        }, options)
-
-        container.addView(playerView)
+        loadPlayer()
     }
 
-    override fun getView(): View = container
+    inner class PlayerBridge {
+        @JavascriptInterface
+        fun postMessage(msg: String) {
+            android.util.Log.d("YTPlayer", "bridge msg=$msg videoId=$videoId")
+            mainHandler.post {
+                when {
+                    msg == "ready" -> channel.invokeMethod("onReady", null)
+                    msg.startsWith("state:") -> channel.invokeMethod("onStateChange", msg.drop(6))
+                    msg.startsWith("error:") -> channel.invokeMethod("onError", msg.drop(6))
+                }
+            }
+        }
+    }
+
+    private fun loadPlayer() {
+        if (videoId.isEmpty()) return
+        val autoPlayNum = if (autoPlay) 1 else 0
+        val html = """<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;background:#000;overflow:hidden}
+html,body{width:100%;height:100%}
+#player{position:absolute;top:0;left:0;width:100%;height:100%}
+</style>
+</head>
+<body>
+<div id="player"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+var player;
+function onYouTubeIframeAPIReady(){
+    Android.postMessage('api_ready');
+    player=new YT.Player('player',{
+        videoId:'$videoId',
+        playerVars:{
+            controls:0,rel:0,showinfo:0,modestbranding:1,
+            iv_load_policy:3,playsinline:1,
+            autoplay:$autoPlayNum,loop:1,playlist:'$videoId',
+            origin:'https://www.youtube.com'
+        },
+        events:{
+            onReady:function(e){
+                Android.postMessage('ready');
+            },
+            onStateChange:function(e){
+                Android.postMessage('state:'+e.data);
+                if(e.data===0){player.seekTo(0);player.playVideo();}
+            },
+            onError:function(e){
+                Android.postMessage('error:'+e.data);
+            }
+        }
+    });
+}
+window.onerror=function(msg,src,line){
+    Android.postMessage('jserror:'+msg);
+};
+function playVideo(){if(player&&player.playVideo)player.playVideo();}
+function pauseVideo(){if(player&&player.pauseVideo)player.pauseVideo();}
+function loadNewVideo(id){if(player&&player.loadVideoById)player.loadVideoById(id);}
+function seekTo(s){if(player&&player.seekTo)player.seekTo(s,true);}
+</script>
+</body>
+</html>"""
+        webView.loadDataWithBaseURL(
+            "https://www.youtube.com",
+            html,
+            "text/html",
+            "UTF-8",
+            null
+        )
+    }
+
+    override fun getView(): View = webView
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
-            "play" -> { youtubePlayer?.play(); result.success(null) }
-            "pause" -> { youtubePlayer?.pause(); result.success(null) }
+            "play" -> {
+                webView.evaluateJavascript("playVideo()", null)
+                result.success(null)
+            }
+            "pause" -> {
+                webView.evaluateJavascript("pauseVideo()", null)
+                result.success(null)
+            }
             "loadVideo" -> {
                 val id = call.argument<String>("videoId") ?: ""
-                youtubePlayer?.loadVideo(id, 0f)
+                webView.evaluateJavascript("loadNewVideo('$id')", null)
                 result.success(null)
             }
             "seekTo" -> {
                 val seconds = call.argument<Double>("seconds") ?: 0.0
-                youtubePlayer?.seekTo(seconds.toFloat())
+                webView.evaluateJavascript("seekTo($seconds)", null)
                 result.success(null)
             }
             else -> result.notImplemented()
@@ -89,7 +164,7 @@ class YoutubePlayerPlatformView(
     }
 
     override fun dispose() {
-        playerView.release()
         channel.setMethodCallHandler(null)
+        webView.destroy()
     }
 }

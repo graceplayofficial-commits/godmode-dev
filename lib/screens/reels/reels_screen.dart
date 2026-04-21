@@ -34,8 +34,11 @@ class _ReelsScreenState extends State<ReelsScreen> {
         query = query.where('category', isEqualTo: _categories[_catIdx]);
       }
       final snap = await query.get();
+      debugPrint('Reels: loaded ${snap.docs.length} videos');
+      final vids = snap.docs.map((d) => d.data() as Map<String, dynamic>).toList();
+      if (vids.isNotEmpty) debugPrint('First videoId: ${vids[0]['videoId']}');
       setState(() {
-        _videos = snap.docs.map((d) => d.data() as Map<String, dynamic>).toList();
+        _videos = vids;
         _loading = false;
         _currentPage = 0;
       });
@@ -185,6 +188,7 @@ class _ReelPageState extends State<_ReelPage> {
   final _playerKey = GlobalKey<NativeYoutubePlayerState>();
   bool _ready = false;
   bool _hasError = false;
+  String _errorCode = '';
 
   @override
   void didUpdateWidget(_ReelPage old) {
@@ -222,8 +226,8 @@ class _ReelPageState extends State<_ReelPage> {
             autoPlay: widget.isActive,
             onReady: () { if (mounted) setState(() => _ready = true); },
             onError: (err) {
-              debugPrint('YouTube error: $err');
-              if (mounted) setState(() => _hasError = true);
+              debugPrint('YouTube error code: $err (videoId=${widget.video['videoId']})');
+              if (mounted) setState(() { _hasError = true; _errorCode = err; });
             },
           ),
 
@@ -240,7 +244,9 @@ class _ReelPageState extends State<_ReelPage> {
                 child: Image.network(thumbnail, width: 200, fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => const SizedBox()),
               ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
+            Text('error: $_errorCode', style: const TextStyle(color: Colors.white38, fontSize: 10)),
+            const SizedBox(height: 8),
             GestureDetector(
               onTap: () => launchUrl(Uri.parse('https://www.youtube.com/shorts/$videoId'), mode: LaunchMode.externalApplication),
               child: Container(
