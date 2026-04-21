@@ -289,3 +289,57 @@ exports.seedPosts = onRequest({ invoker: "public" }, async (req, res) => {
   await batch.commit();
   res.json({ success: true, count: posts.length });
 });
+
+// 6) 임베드 가능 영상 체크
+exports.checkEmbeddable = onRequest(
+    { timeoutSeconds: 540, memory: "512MiB", secrets: [YOUTUBE_API_KEY], invoker: "public" },
+    async (req, res) => {
+      const apiKey = YOUTUBE_API_KEY.value();
+      const snapshot = await db.collection("videos").get();
+      const allIds = snapshot.docs.map((d) => d.data().videoId);
+      console.log(`Total videos: ${allIds.length}`);
+
+      let embeddable = 0;
+      let notEmbeddable = 0;
+
+      // 50개씩 배치 체크
+      for (let i = 0; i < allIds.length; i += 50) {
+        const batch = allIds.slice(i, i + 50);
+        const ids = batch.join(",");
+        const data = await ytFetch("videos", { id: ids, part: "status" }, apiKey);
+        for (const item of (data.items || [])) {
+          if (item.status && item.status.embeddable) {
+            embeddable++;
+          } else {
+            notEmbeddable++;
+          }
+        }
+      }
+
+      // 임베드 불가 영상 삭제 (query param으로 제어)
+      if (req.query.clean === "true") {
+        const allDocs = snapshot.docs;
+        const notEmbeddableIds = new Set();
+        for (let i = 0; i < allIds.length; i += 50) {
+          const batch = allIds.slice(i, i + 50);
+          const ids = batch.join(",");
+          const data = await ytFetch("videos", { id: ids, part: "status" }, apiKey);
+          for (const item of (data.items || [])) {
+            if (!item.status || !item.status.embeddable) {
+              notEmbeddableIds.add(item.id);
+            }
+          }
+        }
+        let deleted = 0;
+        for (const doc of allDocs) {
+          if (notEmbeddableIds.has(doc.data().videoId)) {
+            await doc.ref.delete();
+            deleted++;
+          }
+        }
+        res.json({ total: allIds.length, embeddable, notEmbeddable, deleted, ratio: `${Math.round(embeddable / allIds.length * 100)}%` });
+      } else {
+        res.json({ total: allIds.length, embeddable, notEmbeddable, ratio: `${Math.round(embeddable / allIds.length * 100)}%` });
+      }
+    },
+);
