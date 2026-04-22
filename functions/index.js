@@ -87,7 +87,7 @@ async function fetchAllVideoIds(playlistId, apiKey, afterDate = null) {
   return videoIds;
 }
 
-// ── 영상 상세 (duration) 조회 → Shorts 필터 ──
+// ── 영상 상세 (duration + embeddable) 조회 → Shorts 필터 ──
 async function filterShorts(videoItems, apiKey) {
   const shorts = [];
   // 50개씩 배치 처리
@@ -96,12 +96,13 @@ async function filterShorts(videoItems, apiKey) {
     const ids = batch.map((v) => v.videoId).join(",");
     const data = await ytFetch("videos", {
       id: ids,
-      part: "contentDetails",
+      part: "contentDetails,status",  // status.embeddable 체크 추가
     }, apiKey);
 
     for (const detail of (data.items || [])) {
       const duration = parseDuration(detail.contentDetails?.duration || "");
-      if (duration > 0 && duration <= 60) {
+      const embeddable = detail.status?.embeddable === true;  // 임베드 허용 영상만
+      if (duration > 0 && duration <= 60 && embeddable) {
         const original = batch.find((v) => v.videoId === detail.id);
         if (original) {
           shorts.push({ ...original, duration });
@@ -255,7 +256,49 @@ exports.listShorts = onRequest({ invoker: "public" }, async (req, res) => {
   res.json({ count: videos.length, videos });
 });
 
-// 5) 샘플 커뮤니티 게시물 생성
+// 5) 임베드 불허 영상 정리 + 재검증 (일회성 수동 실행)
+exports.cleanNonEmbeddable = onRequest(
+    { timeoutSeconds: 540, memory: "512MiB", secrets: [YOUTUBE_API_KEY], invoker: "public" },
+    async (req, res) => {
+      const apiKey = YOUTUBE_API_KEY.value();
+      const snapshot = await db.collection("videos").get();
+      const allDocs = snapshot.docs;
+      console.log(`총 ${allDocs.length}개 영상 검증 시작`);
+
+      let removed = 0;
+      let kept = 0;
+
+      // 50개씩 배치로 embeddable 재확인
+      for (let i = 0; i < allDocs.length; i += 50) {
+        const chunk = allDocs.slice(i, i + 50);
+        const ids = chunk.map((d) => d.id).join(",");
+        const data = await ytFetch("videos", { id: ids, part: "status" }, apiKey);
+
+        const embeddableIds = new Set(
+            (data.items || [])
+                .filter((v) => v.status?.embeddable === true)
+                .map((v) => v.id),
+        );
+
+        const batch = db.batch();
+        for (const doc of chunk) {
+          if (!embeddableIds.has(doc.id)) {
+            batch.delete(doc.ref);
+            removed++;
+          } else {
+            kept++;
+          }
+        }
+        await batch.commit();
+      }
+
+      const msg = `정리 완료: 삭제 ${removed}개, 유지 ${kept}개`;
+      console.log(msg);
+      res.json({ removed, kept, message: msg });
+    },
+);
+
+// 6) 샘플 커뮤니티 게시물 생성
 exports.seedPosts = onRequest({ invoker: "public" }, async (req, res) => {
   const posts = [
     { nickname: "은혜충만", profileEmoji: "🙏", category: "자유", title: "오늘 새벽예배 은혜 넘쳤어요", content: "요즘 새벽예배를 시작했는데 정말 하루가 달라졌어요. 힘들지만 그만큼 은혜가 크네요. 새벽예배 드시는 분들 화이팅입니다! 🔥" },

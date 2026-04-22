@@ -59,6 +59,11 @@ class YoutubePlayerPlatformView(
         // 써드파티 쿠키 허용 (YouTube iframe 필수)
         cookieManager.setAcceptThirdPartyCookies(webView, true)
 
+        // YouTube 동의 쿠키 설정 (동의 팝업 우회)
+        cookieManager.setCookie("https://www.youtube.com", "CONSENT=YES+1; domain=.youtube.com; path=/")
+        cookieManager.setCookie("https://www.youtube.com", "SOCS=CAI; domain=.youtube.com; path=/")
+        cookieManager.flush()
+
         loadPlayer()
     }
 
